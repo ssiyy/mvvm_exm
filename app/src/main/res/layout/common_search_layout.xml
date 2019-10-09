@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.siy.mvvm.exm.views.search.CommonSearch" />
+
+        <variable
+            name="search"
+            type="CommonSearch" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/search_shadow_shap"
+        android:focusableInTouchMode="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            bind:backgroundResource="@{search.searchIcon}"
+            tools:background="@drawable/common_search" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:background="@null"
+            android:hint="@{search.searchTip}"
+            android:imeOptions="actionSearch"
+            android:paddingLeft="5dp"
+            android:singleLine="true"
+            android:text="@={search.searchStr}"
+            android:textColor="#2D2A2A"
+            android:textColorHint="#757575"
+            android:textSize="14sp"
+            bind:onEditorActionListener="@{(v,a,e)->search.onEditorAction(v,a,e)}"
+            tools:text="输入内容" />
+    </LinearLayout>
+</layout>

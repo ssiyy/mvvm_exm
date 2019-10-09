@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.text.method.HideReturnsTransformationMethod"/>
+
+        <import type="android.text.method.PasswordTransformationMethod"/>
+
+        <import type="android.graphics.Color"/>
+
+        <variable
+                name="viewModel"
+                type="com.siy.mvvm.exm.ui.login.LoginViewModel"/>
+    </data>
+
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/login_bg"
+            android:orientation="vertical">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/login_msg_input_bg"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical"
+                android:padding="30dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="用户登录"
+                    android:textColor="#FFFEFE"
+                    android:textSize="24sp"/>
+
+            <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+
+                <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/login_inditor_line"/>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:layout_gravity="bottom"
+                        android:background="#33FEFCFC"/>
+            </FrameLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:orientation="vertical">
+
+                <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:drawableLeft="@drawable/login_user_name"
+                        android:drawablePadding="10dp"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:hint="请输入用户名"
+                        android:text="@={viewModel.mUserName}"
+                        android:textColorHint="#232323"
+                        android:textSize="14sp"/>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:layout_gravity="bottom"
+                        android:layout_marginTop="8dp"
+                        android:background="#80FEFCFC"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp">
+
+                <ImageView
+                        android:id="@+id/eye"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentRight="true"
+                        android:onClick="@{()->viewModel.hideOrShowPwd()}"
+                        android:src="@drawable/gzxm_ck"
+                        bind:colorFilter='@{viewModel.showPwd?Color.parseColor("#B35596F4"):Color.WHITE}'/>
+
+                <EditText
+                        android:id="@+id/input_pwd_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toLeftOf="@id/eye"
+                        android:background="@null"
+                        android:drawableLeft="@drawable/login_pwd"
+                        android:drawablePadding="10dp"
+                        android:hint="请输入密码"
+                        android:inputType="textPassword"
+                        android:singleLine="true"
+                        android:text="@={viewModel.mUserPwd}"
+                        android:textColorHint="#232323"
+                        android:textSize="14sp"
+                        bind:transformationMethod="@{viewModel.showPwd?HideReturnsTransformationMethod.getInstance():PasswordTransformationMethod.getInstance()}"/>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:layout_below="@id/input_pwd_et"
+                        android:layout_gravity="bottom"
+                        android:layout_marginTop="8dp"
+                        android:background="#80FEFCFC"/>
+            </RelativeLayout>
+
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/login_login_btn_bg"
+                    android:gravity="center"
+                    android:onClick="@{()->viewModel.login()}"
+                    android:text="登录"
+                    android:textColor="#FFFEFE"
+                    android:textSize="24sp"/>
+        </LinearLayout>
+    </RelativeLayout>
+</layout>

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.siy.mvvm.exm.views.MainIndicator"/>
+
+
+        <variable
+            name="mainIndicator"
+            type="MainIndicator" />
+
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="@android:color/transparent"
+        android:gravity="bottom"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:paddingBottom="4dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="55dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="center"
+                    android:onClick="@{()->mainIndicator.onVg1Click()}"
+                    android:orientation="vertical"
+                    android:paddingTop="6dp">
+
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/main_tab_icon_selector"
+                        bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG1_CODE) !=0}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="首页"
+                        android:textColor="@drawable/main_tab_txt_color_selector"
+                        android:textSize="9sp"
+                        bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG1_CODE) !=0}" />
+                </LinearLayout>
+
+                <com.siy.mvvm.exm.views.DragPointView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="5dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:visibility="invisible"
+                    tools:text="11"
+                    tools:visibility="visible" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:paddingBottom="4dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="55dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="center"
+                    android:onClick="@{()->mainIndicator.onVg2Click()}"
+                    android:orientation="vertical"
+                    android:paddingTop="6dp">
+
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/main_tab_icon_selector"
+                        bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG2_CODE) !=0}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="履职"
+                        android:textColor="@drawable/main_tab_txt_color_selector"
+                        android:textSize="9sp"
+                        bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG2_CODE) !=0}" />
+                </LinearLayout>
+
+                <com.siy.mvvm.exm.views.DragPointView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="5dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:visibility="invisible"
+                    tools:text="11"
+                    tools:visibility="visible" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:paddingBottom="4dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_gravity="center_horizontal|bottom"
+                android:background="@android:color/white" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginRight="5dp"
+                android:gravity="center"
+                android:onClick="@{()->mainIndicator.onVgMainClick()}"
+                android:orientation="vertical"
+                android:paddingTop="6dp">
+
+                <ImageView
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/fast_realism" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="快速写实"
+                    android:textColor="@drawable/main_tab_txt_color_selector"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:paddingBottom="4dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white">
+
+            <FrameLayout
+                android:id="@+id/fl_vg4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="55dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="center"
+                    android:onClick="@{()->mainIndicator.onVg4Click()}"
+                    android:orientation="vertical"
+                    android:paddingTop="6dp">
+
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/main_tab_icon_selector"
+                        bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG4_CODE) !=0}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="查询"
+                        android:textColor="@drawable/main_tab_txt_color_selector"
+                        android:textSize="9sp"
+                        bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG4_CODE) !=0}" />
+                </LinearLayout>
+
+                <com.siy.mvvm.exm.views.DragPointView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="5dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:visibility="invisible"
+                    tools:text="11"
+                    tools:visibility="visible" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:paddingBottom="4dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/white">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="55dp"
+                    android:layout_marginRight="5dp"
+                    android:gravity="center"
+                    android:onClick="@{()->mainIndicator.onVg5Click()}"
+                    android:orientation="vertical"
+                    android:paddingTop="6dp">
+
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="27dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@drawable/main_tab_icon_selector"
+                        bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG5_CODE) !=0}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="我的"
+                        android:textColor="@drawable/main_tab_txt_color_selector"
+                        android:textSize="9sp"
+                        bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG5_CODE) !=0}" />
+                </LinearLayout>
+
+                <com.siy.mvvm.exm.views.DragPointView
+                    android:id="@+id/tab_dv_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="5dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:visibility="invisible"
+                    tools:text="11"
+                    tools:visibility="visible" />
+            </FrameLayout>
+        </FrameLayout>
+    </LinearLayout>
+</layout>
+
+

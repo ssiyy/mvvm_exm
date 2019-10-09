@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.siy.mvvm.exm.views.header.CommonHeader" />
+
+        <import type="android.view.View" />
+
+        <import type="androidx.appcompat.content.res.AppCompatResources" />
+
+        <variable
+            name="header"
+            type="com.siy.mvvm.exm.views.header.CommonHeader" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#4F94F3"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="@{header.showTitleVg?View.VISIBLE:View.GONE}">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:onClick="@{()->header.onBackClick()}">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:visibility="@{header.showBackIcon?View.VISIBLE:View.INVISIBLE}"
+                bind:backgroundResource="@{header.backIcon}"
+                tools:background="@drawable/common_back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="@{header.backStr}"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:visibility="@{header.showbackStr?View.VISIBLE:View.INVISIBLE}"
+                tools:text="返回" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:onClick="@{()->header.onTitleClick()}"
+                    android:singleLine="true"
+                    android:text="@{header.title}"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:visibility="@{header.showTitle?View.VISIBLE:View.INVISIBLE}"
+                    tools:text="岗位职责" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:onClick="@{()->header.onTitleIconClick()}"
+                    android:visibility="@{header.showTitleIcon?View.VISIBLE:View.INVISIBLE}"
+                    bind:backgroundResource="@{header.titleIcon}"
+                    tools:background="@drawable/common_question" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/right_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:background="@{header.rightIcon==null?header.rightIconDrawable:  AppCompatResources.getDrawable(context,header.rightIcon)}"
+            android:onClick="@{()->header.onRightIconClick()}"
+            android:visibility="@{header.showRightIcon?View.VISIBLE:View.INVISIBLE}"
+            tools:background="@drawable/real_write" />
+    </LinearLayout>
+</layout>

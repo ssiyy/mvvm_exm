@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_dialog_bg"
+    android:orientation="vertical"
+    android:paddingTop="15dp">
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+        <TextView
+            android:id="@+id/dialog_title_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.2"
+            android:textColor="#FF4A4A4A"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="标题"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/dialog_title_msg_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="15dp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.2"
+            android:textColor="#FF5D5D5D"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:text="标题描述"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/dialog_help_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="15dp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.2"
+            android:textColor="#FF777777"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:text="辅助描述"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/dialog_msg_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="15dp"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.2"
+            android:scrollbars="vertical"
+            android:textColor="#FF000000"
+            android:textSize="16sp"
+            android:visibility="gone"
+            tools:text="正文"
+            tools:visibility="visible" />
+
+        <View
+            android:id="@+id/dialog_msg_line"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginTop="20dp"
+            android:background="#FFE1E1E1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/dialog_positive_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_dialog_left_btn_bg"
+            android:gravity="center"
+            android:textColor="#FF4A90E2"
+            android:textSize="17sp"
+            android:visibility="gone"
+            tools:text="确定"
+            tools:visibility="visible" />
+
+        <View
+            android:id="@+id/dialog_btn_line"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="#E1E1E1" />
+
+        <TextView
+            android:id="@+id/dialog_negative_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_dialog_right_btn_bg"
+            android:gravity="center"
+            android:textColor="#FF9B9B9B"
+            android:textSize="17sp"
+            android:visibility="gone"
+            tools:text="取消"
+            tools:visibility="visible" />
+    </LinearLayout>
+</LinearLayout>
+
+
