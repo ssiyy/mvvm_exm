@@ -4,10 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
+import androidx.lifecycle.*
 import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.Glide
 import com.siy.mvvm.exm.R
@@ -22,11 +19,10 @@ import com.siy.mvvm.exm.http.GbdService
 import com.siy.mvvm.exm.http.PAGESTATUS
 import com.siy.mvvm.exm.http.Status
 import com.siy.mvvm.exm.ui.Banner
-import com.siy.mvvm.exm.utils.autoCleared
-import com.siy.mvvm.exm.utils.setupRefreshLayout
-import com.siy.mvvm.exm.utils.showToast
+import com.siy.mvvm.exm.utils.*
 import com.siy.mvvm.exm.views.header.CommonHeader
 import com.siy.mvvm.exm.views.loopingviewpager.LoopViewPager
+import com.siy.mvvm.exm.views.search.AutoSearch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,11 +49,19 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
             header = object : CommonHeader() {
                 init {
                     title.value = "首页"
+                    showTitleIcon.value = false
                 }
 
                 override fun onBackClick() {
                     navController.popBackStack()
                 }
+            }
+
+            search = object : AutoSearch(viewLifecycleOwner) {
+                override fun searchApi(searchStr: String) {
+                    viewModel.showArctiles(searchStr)
+                }
+
             }
 
             click0s = mapOf(
@@ -67,14 +71,11 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
 
             click1s = mapOf(
                 "onItemClick" to
-                        fun(postion: Int): Boolean {
-
-                            return false
-                        },
-                "onItemLongLick" to
-                        fun(postion: Int): Boolean {
-
-                            return true
+                        fun(postion: Int) {
+                            val item = this@FirstPageFragment.adapter.getItem(postion)
+                            item?.let {
+                                showToast(it.title)
+                            }
                         }
             )
 
@@ -82,25 +83,25 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
                 this@FirstPageFragment.adapter = this
                 addHeaderView(headerView)
             }
-
             setupRefreshLayout(srlLayout, recyclerView)
         }
         setUpObserver()
+        viewModel.showArctiles(mViewDataBinding?.search?.searchStr?.value ?: "")
     }
 
 
     private fun setUpObserver() {
         viewModel.banners.observe(viewLifecycleOwner) {
             when (it.status) {
-                Status.LOADING -> showLoadingDialog("加载中")
                 Status.SUCCESS -> lifecycleScope.launchWhenStarted {
                     hideLoadingDialog()
                     addBanner(it.data)
                 }
+                else -> Unit
             }
         }
 
-        viewModel.articleList.observe(viewLifecycleOwner){
+        viewModel.articleList.observe(viewLifecycleOwner) {
             lifecycleScope.launchWhenStarted {
                 adapter.asyncSetDisffData(it)
             }
@@ -148,40 +149,31 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
     }
 
     private val headerView by lazy {
-        val looperPage = LoopViewPager(context)
-//        looperPage.adapter = BannerAdapter()
-        looperPage
+        LoopViewPager(context).apply {
+            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dip2px(200f))
+        }
     }
 
     private fun addBanner(banners: List<Banner>?) {
         if (!banners.isNullOrEmpty()) {
-          //  (headerView.adapter as? BannerAdapter)?.setDatas(banners)
-
             headerView.adapter = BannerAdapter(banners)
         }
     }
 
-    class BannerAdapter(private val banners: List<Banner>) : PagerAdapter() {
-
-      /*  private var banners: List<Banner> = listOf()
-
-        fun setDatas(banners: List<Banner>) {
-            this.banners = banners
-            notifyDataSetChanged()
-        }*/
+    class BannerAdapter(private var banners: List<Banner>) : PagerAdapter() {
 
         override fun isViewFromObject(view: View, `object`: Any) = view == `object`
 
         override fun getCount() = banners.size
 
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
-            val iv = ImageView(container.context).apply {
-                scaleType = ImageView.ScaleType.CENTER_CROP
-            }
-
-            Glide.with(container.context!!).load(banners[position]).into(iv)
-            container.addView(iv)
-            return iv
+            val view = container.inflater.inflate(R.layout.fleet_free_banner_view, null, false)
+            val view1 = view.findViewById<ImageView>(R.id.imageview)
+            view1.scaleType = ImageView.ScaleType.CENTER_CROP
+            view1.setBackgroundResource(R.drawable.common_shape_banner_bg)
+            Glide.with(container.context).load(banners[position].imagePath).into(view1)
+            container.addView(view)
+            return view
         }
 
         override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
@@ -195,36 +187,56 @@ class FirstPageViewModel @Inject constructor(
 ) : ViewModel() {
     val banners = rep.getBanners()
 
-    private val articleResult = rep.getArtclesByPage()
+    /**
+     * 搜索的关键字
+     */
+    private val searchStr = MutableLiveData<String>()
+    private val articleResult = searchStr.map {
+        rep.getArtclesByPage(it)
+    }
 
     /**
      * 列表
      */
-    val articleList = articleResult.list
+    val articleList = articleResult.switchMap {
+        it.list
+    }
 
 
     /**
      * 加载状态
      */
-    val loadState = articleResult.loadStatus
+    val loadState = articleResult.switchMap {
+        it.loadStatus
+    }
 
     /**
      * 刷新状态
      */
-    val refreshState = articleResult.refreshStatus
+    val refreshState = articleResult.switchMap {
+        it.refreshStatus
+    }
 
     /**
      * 加载更多方法
      */
     fun loadMore() {
-        articleResult.loadData.invoke()
+        articleResult.value?.loadData?.invoke()
     }
 
     /**
      * 刷新方法
      */
     fun refresh() {
-        articleResult.refresh.invoke()
+        articleResult.value?.refresh?.invoke()
+    }
+
+    fun showArctiles(str: String): Boolean {
+        if (searchStr.value == str) {
+            return false
+        }
+        searchStr.value = str
+        return true
     }
 }
 
@@ -255,9 +267,9 @@ class FirstPageRep @Inject constructor(
     )
 
 
-    fun getArtclesByPage() = loadDataByPage(
+    fun getArtclesByPage(search: String) = loadDataByPage(
         {
-            articleDao.queryAll()
+            articleDao.queryBySearchStr(search)
         },
         {
             it
@@ -271,7 +283,12 @@ class FirstPageRep @Inject constructor(
             }
 
             if (!list.isNullOrEmpty()) {
-                articleDao.insertAll(list)
+                val sum = articleDao.queryDataSum()
+
+                articleDao.insertAll(list.mapIndexed { index, article ->
+                    article._order_ = sum + index
+                    article
+                })
             }
         },
         {

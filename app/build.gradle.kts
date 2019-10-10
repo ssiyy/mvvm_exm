@@ -11,7 +11,7 @@ android {
     compileSdkVersion(28)
 
      defaultConfig {
-        applicationId = "com.example.dugup.gbd"
+        applicationId = "com.siy.mvvm.exm"
         minSdkVersion(17)
         targetSdkVersion(28)
         versionCode = 1

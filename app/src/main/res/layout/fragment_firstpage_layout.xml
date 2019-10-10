@@ -29,7 +29,7 @@
 
         <variable
             name="click1s"
-            type="Map&lt;String,Function1&lt;Integer,Boolean&gt;&gt;" />
+            type="Map&lt;String,Function1&lt;Integer,Unit&gt;&gt;" />
 
         <variable
             name="adapter"
@@ -38,7 +38,6 @@
         <variable
             name="header"
             type="CommonHeader" />
-
 
         <variable
             name="search"
@@ -56,7 +55,6 @@
             bind:header="@{header}" />
 
         <include
-
             layout="@layout/common_search_layout"
             android:layout_width="match_parent"
             android:layout_height="45dp"
@@ -81,7 +79,6 @@
                 android:emptyView="@{GbdUtils.getEmptyPromptView(context,@string/no_more_data)}"
                 android:loadMoreEnable="@{true}"
                 android:onItemClick="@{(a,b,c)->click1s.onItemClick.invoke(c)}"
-                android:onItemLongClick="@{(a,b,c)-> click1s.onItemLongLick.invoke(c)}"
                 android:onLoadMore="@{()->click0s.onLoadMore.invoke()}"
                 bind:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </com.siy.mvvm.exm.views.ScrollChildSwipeRefreshLayout>

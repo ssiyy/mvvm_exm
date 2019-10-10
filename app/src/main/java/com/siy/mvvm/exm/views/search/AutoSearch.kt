@@ -1,13 +1,13 @@
 package com.siy.mvvm.exm.views.search
 
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import com.siy.mvvm.exm.utils.GDB_ERROR
-import com.siy.mvvm.exm.utils.autoDisposable
+import androidx.lifecycle.lifecycleScope
 import com.siy.mvvm.exm.utils.toFlowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Consumer
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.reactive.asFlow
 
 
 /**
@@ -17,14 +17,21 @@ import java.util.concurrent.TimeUnit
  *
  * @author Siy
  */
-abstract class AutoSearch( mOwner: LifecycleOwner) : CommonSearch() {
+abstract class AutoSearch(mOwner: LifecycleOwner) : CommonSearch() {
 
     init {
         //自动搜索
-        searchStr.toFlowable(mOwner)
-            .debounce(1, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .`as`(mOwner.autoDisposable(Lifecycle.Event.ON_DESTROY))
-            .subscribe(Consumer { searchApi(it) }, GDB_ERROR)
+        searchStr.toFlowable(mOwner).asFlow()
+            .debounce(1000)
+            .catch {
+                emit("")
+            }
+            .onEach {
+                searchApi(it)
+            }
+            .launchIn(mOwner.lifecycleScope)
+        /*  .observeOn(AndroidSchedulers.mainThread())
+          .`as`(mOwner.autoDisposable(Lifecycle.Event.ON_DESTROY))
+          .subscribe(Consumer { searchApi(it) }, GDB_ERROR)*/
     }
 }

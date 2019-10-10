@@ -63,7 +63,11 @@ data class Article(
     val superChapterId: Int?,
     val superChapterName: String?,
     val type: Int?,
-    val fresh: Boolean?
+    val fresh: Boolean?,
+    /**
+     * 用于存储服务器返回的顺序
+     */
+    var _order_:Int
 )
 
 data class ArticleList(

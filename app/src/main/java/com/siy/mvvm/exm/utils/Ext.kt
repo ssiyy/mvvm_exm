@@ -22,6 +22,7 @@ import android.renderscript.ScriptIntrinsicBlur
 import android.telephony.TelephonyManager
 import android.util.DisplayMetrics
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
@@ -48,7 +49,8 @@ import java.io.StringWriter
  */
 
 
-inline fun <reified R, T> R.pref(default: T, mode: Preference.MODE = Preference.MODE.STROGE_SP) = Preference(default, R::class.java.name, mode)
+inline fun <reified R, T> R.pref(default: T, mode: Preference.MODE = Preference.MODE.STROGE_SP) =
+    Preference(default, R::class.java.name, mode)
 
 /**
  * 截屏
@@ -74,16 +76,21 @@ fun <T> LifecycleOwner.autoDisposable(event: Lifecycle.Event = Lifecycle.Event.O
  * @param dipValue 需要转的dip
  */
 fun Context.dip2px(dipValue: Float) =
-    (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dipValue, resources.displayMetrics) + 0.5f).toInt()
+    (TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dipValue,
+        resources.displayMetrics
+    ) + 0.5f).toInt()
 
 fun Fragment.dip2px(dipValue: Float) = requireActivity().dip2px(dipValue)
 
 fun Context.checkPermissions(vararg permissions: String): Boolean {
-    val checkPermission = fun(permission: String) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
-    } else {
-        true
-    }
+    val checkPermission =
+        fun(permission: String) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
 
     for (permission in permissions) {
         if (!checkPermission(permission)) {
@@ -94,7 +101,8 @@ fun Context.checkPermissions(vararg permissions: String): Boolean {
     return true
 }
 
-fun Context.showToast(msg: CharSequence) = Toast.makeText(this.applicationContext, msg, Toast.LENGTH_SHORT).show()
+fun Context.showToast(msg: CharSequence) =
+    Toast.makeText(this.applicationContext, msg, Toast.LENGTH_SHORT).show()
 
 /**
  * 隐藏键盘
@@ -113,7 +121,7 @@ fun <T> LiveData<T>.toFlowable(owner: LifecycleOwner): Flowable<T> {
     return Flowable.fromPublisher(publisher)
 }
 
-typealias SClick =  SystemDialog.OnClickListener?
+typealias SClick = SystemDialog.OnClickListener?
 
 /**
  * 显示系统对话框 正文-按钮文字
@@ -177,7 +185,14 @@ fun Context.showSysDialog(
     positiveListener: SClick,
     negativeListener: SClick
 ): SystemDialog {
-    return showSysDialog(null, msg, positiveBtnText, negativeBtnText, positiveListener, negativeListener)
+    return showSysDialog(
+        null,
+        msg,
+        positiveBtnText,
+        negativeBtnText,
+        positiveListener,
+        negativeListener
+    )
 }
 
 fun Fragment.showSysDialog(
@@ -186,7 +201,13 @@ fun Fragment.showSysDialog(
     negativeBtnText: String?,
     positiveListener: SClick,
     negativeListener: SClick
-) = requireActivity().showSysDialog(msg, positiveBtnText, negativeBtnText, positiveListener, negativeListener)
+) = requireActivity().showSysDialog(
+    msg,
+    positiveBtnText,
+    negativeBtnText,
+    positiveListener,
+    negativeListener
+)
 
 /**
  * 显示系统对话框  标题-正文-右边文字-左边文字
@@ -225,7 +246,14 @@ fun Fragment.showSysDialog(
     negativeBtnText: String?,
     positiveListener: SClick,
     negativeListener: SClick
-) = requireActivity().showSysDialog(title, msg, positiveBtnText, negativeBtnText, positiveListener, negativeListener)
+) = requireActivity().showSysDialog(
+    title,
+    msg,
+    positiveBtnText,
+    negativeBtnText,
+    positiveListener,
+    negativeListener
+)
 
 
 /**
@@ -376,3 +404,7 @@ val Context.exCacheDir: File
     } else {
         cacheDir
     }
+
+
+val View.inflater: LayoutInflater
+    get() = LayoutInflater.from(context)
