@@ -1,7 +1,9 @@
 package com.siy.mvvm.exm.http
 
+import com.siy.mvvm.exm.ui.ArticleList
 import com.siy.mvvm.exm.ui.Banner
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 
 /**
@@ -23,7 +25,7 @@ interface GbdService {
     @GET("/banner/json")
     suspend fun getBanner(): BaseBean<List<Banner>>
 
-  //  @GET("/article/list/{page}/json")
-  //  suspend fun getHomeArticles(@Path("page") page: Int): BaseBean<ArticleList>
+    @GET("/article/list/{page}/json")
+    suspend fun getHomeArticles(@Path("page") page: Int): BaseBean<ArticleList>
 
 }

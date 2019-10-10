@@ -1,5 +1,6 @@
 package com.siy.mvvm.exm.ui.main.firstpage
 
+import com.chad.library.adapter.base.diff.BaseQuickDiffCallback
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.databinding.ItemArticleBinding
 import com.siy.mvvm.exm.ui.Article
@@ -18,4 +19,29 @@ class ArticleListAdapter(datas:List<Article>?)  : BaseDataBindingAdapter<Article
         binding?.article = item
     }
 
+    suspend fun asyncSetDisffData(newList:List<Article>?){
+        asyncDisffData(newList,DiffCallBack(newList,data))
+    }
+
+    private class DiffCallBack(newList:List<Article>?,oldList:List<Article>) : BaseQuickDiffCallback<Article>(newList){
+
+        init {
+            setOldList(oldList)
+        }
+
+        /**
+         * 判断是否是同一个Item
+         */
+        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        /**
+         *当是同一个item时，再判断内容是否发生改变
+         */
+        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
+            return oldItem == newItem
+        }
+
+    }
 }

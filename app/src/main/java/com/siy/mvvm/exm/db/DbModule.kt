@@ -31,4 +31,8 @@ class DbModule {
     @Provides
     fun bannerDao(db: GbdDb) = db.bannerDao()
 
+    @Singleton
+    @Provides
+    fun articleDao(db: GbdDb) = db.articleDao()
+
 }

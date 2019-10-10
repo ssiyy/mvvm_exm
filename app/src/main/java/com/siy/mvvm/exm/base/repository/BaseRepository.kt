@@ -190,7 +190,7 @@ abstract class BaseRepository {
      *
      * @param firstRefresh 第一次调用该方法时，是否直接发送刷新列表的请求
      *
-     * @param initPageIndex 服务器请求分页的初始页数，默认是1
+     * @param initPageIndex 服务器请求分页的初始页数，默认是0
      *
      * @return
      *
@@ -210,7 +210,7 @@ abstract class BaseRepository {
             }
         },
         firstRefresh: Boolean = true,
-        initPageIndex: PageIndex = 1
+        initPageIndex: PageIndex = 0
     ): Listing<DbResultType?> {
         //当前请求页面
         var page = initPageIndex
@@ -295,7 +295,7 @@ abstract class BaseRepository {
 
         val refreshLamda = {
             isRefresh = true
-            page = 1
+            page = initPageIndex
             pageLiveData.value = page
         }
 
