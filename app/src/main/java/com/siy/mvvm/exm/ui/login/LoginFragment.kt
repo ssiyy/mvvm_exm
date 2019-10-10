@@ -3,9 +3,11 @@ package com.siy.mvvm.exm.ui.login
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
+import androidx.navigation.navOptions
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.base.Injectable
 import com.siy.mvvm.exm.base.ui.BaseFragment
+import com.siy.mvvm.exm.base.ui.navigateAnimate
 import com.siy.mvvm.exm.databinding.FragmentLoginBinding
 import com.siy.mvvm.exm.utils.Event
 import com.siy.mvvm.exm.utils.EventObserver
@@ -32,9 +34,26 @@ class LoginFragment(
     override fun initViewsAndEvents(view: View) {
         mViewDataBinding?.viewModel = viewModel
 
-        viewModel.toastEvent.observe(this, EventObserver {
+        viewModel.toastEvent.observe(viewLifecycleOwner, EventObserver {
             showToast(it)
         })
+
+        viewModel.loginSate.observe(viewLifecycleOwner) {
+            when (it) {
+                LoginViewModel.LoginState.LOGINED -> {
+                    navController.navigateAnimate(LoginFragmentDirections.actionLoginFragmentToMainFragment(),
+                        navOptions {
+                            popUpTo(R.id.loginFragment) {
+                                inclusive = true
+                            }
+                        })
+                }
+                LoginViewModel.LoginState.LOADFAIL -> {
+                    showToast("登录失败")
+                }
+                else -> Unit
+            }
+        }
 
     }
 }

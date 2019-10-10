@@ -17,6 +17,7 @@ import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.base.CrashHandler
 import com.siy.mvvm.exm.base.ui.BaseFragment
 import com.siy.mvvm.exm.base.ui.navigateAnimate
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 
@@ -40,30 +41,18 @@ class SplashFragment(override val layoutId: Int = View.NO_ID) : BaseFragment<Vie
      */
     private val showErrMsg = errMsg.isNotEmpty() && BuildConfig.DEBUG
 
+    @ExperimentalCoroutinesApi
     override fun initViewsAndEvents(view: View) {
-     /*   Observable.interval(2, TimeUnit.SECONDS)
-            .take(1)
-            .observeOn(AndroidSchedulers.mainThread())
-            .`as`(autoDisposable())
-            .subscribe({
-                navToLogin()
-            }, {
-                requireActivity().finish()
-            })*/
-
         flowOf(0)
             .onStart {
-                delay(2*1000)
+                delay(2 * 1000)
             }
             .catch {
                 requireActivity().finish()
             }
-            .onCompletion{
+            .onCompletion {
                 navToLogin()
             }.launchIn(lifecycleScope)
-
-
-
 
     }
 
@@ -79,39 +68,58 @@ class SplashFragment(override val layoutId: Int = View.NO_ID) : BaseFragment<Vie
         }
     }
 
-    override fun getContentView(inflater: LayoutInflater, container: ViewGroup?) = createContentView()
+    override fun getContentView(inflater: LayoutInflater, container: ViewGroup?) =
+        createContentView()
 
     private fun createContentView(): View {
         val frameLayout = FrameLayout(mContext)
-        frameLayout.addView(ImageView(mContext).apply {
-            scaleType = ImageView.ScaleType.FIT_XY
-            setImageResource(R.drawable.splash)
-        }, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        frameLayout.addView(
+            ImageView(mContext).apply {
+                scaleType = ImageView.ScaleType.FIT_XY
+                setImageResource(R.drawable.splash)
+            },
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
 
 
         if (showErrMsg) {
-            frameLayout.addView(TextView(mContext).apply {
-                setTextColor(Color.parseColor("#3D3636"))
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12F)
-                setBackgroundColor(Color.WHITE)
-                text = errMsg
-                isVerticalScrollBarEnabled = true
-                movementMethod = ScrollingMovementMethod.getInstance()
+            frameLayout.addView(
+                TextView(mContext).apply {
+                    setTextColor(Color.parseColor("#3D3636"))
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 12F)
+                    setBackgroundColor(Color.WHITE)
+                    text = errMsg
+                    isVerticalScrollBarEnabled = true
+                    movementMethod = ScrollingMovementMethod.getInstance()
 
 
-            }, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+                },
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
 
-            frameLayout.addView(TextView(mContext).apply {
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14F)
-                setBackgroundColor(Color.TRANSPARENT)
-                setTextColor(Color.parseColor("#131212"))
-                text = "跳过"
+            frameLayout.addView(
+                TextView(mContext).apply {
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 14F)
+                    setBackgroundColor(Color.TRANSPARENT)
+                    setTextColor(Color.parseColor("#131212"))
+                    text = "跳过"
 
-                setOnClickListener {
-                    navToLogin(false)
-                    CrashHandler.clearException()
-                }
-            }, ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+                    setOnClickListener {
+                        navToLogin(false)
+                        CrashHandler.clearException()
+                    }
+                },
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
         }
         return frameLayout
     }

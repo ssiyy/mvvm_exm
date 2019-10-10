@@ -19,5 +19,16 @@
         android:id="@+id/loginFragment"
         android:name="com.siy.mvvm.exm.ui.login.LoginFragment"
         android:label="LoginFragment">
+        <action
+            android:id="@+id/action_loginFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.siy.mvvm.exm.ui.main.MainFragment"
+        tools:layout="@layout/fragment_main"
+        android:label="MainFragment">
+
     </fragment>
 </navigation>
