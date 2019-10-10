@@ -14,7 +14,6 @@ import com.siy.mvvm.exm.views.MainIndicator
 
 class MainFragment(override val layoutId: Int = R.layout.fragment_main) : BaseFragment<FragmentMainBinding>() {
 
-
     override fun initViewsAndEvents(view: View) {
         initPages()
     }

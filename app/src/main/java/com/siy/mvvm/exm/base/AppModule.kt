@@ -60,7 +60,7 @@ class AppModule {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-          //  .baseUrl(GbdService.URL)
+            .baseUrl(GbdService.URL)
             .build()
     }
 

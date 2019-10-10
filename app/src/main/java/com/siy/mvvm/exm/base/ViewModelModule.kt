@@ -19,6 +19,7 @@ package com.siy.mvvm.exm.base
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.siy.mvvm.exm.ui.login.LoginViewModel
+import com.siy.mvvm.exm.ui.main.firstpage.FirstPageViewModel
 import com.siy.mvvm.exm.viewmodel.GbdViewModelFactory
 import dagger.Binds
 import dagger.Module
@@ -36,18 +37,10 @@ abstract class ViewModelModule {
      @ViewModelKey(LoginViewModel::class)
      abstract fun bindLoginViewModel(viewModel: LoginViewModel): ViewModel
 
-/*     @Binds
+    @Binds
      @IntoMap
-     @ViewModelKey(AccountabilityViewModel::class)
-     abstract fun bindAccountabilityViewModel(viewModel: AccountabilityViewModel): ViewModel
+     @ViewModelKey(FirstPageViewModel::class)
+     abstract fun bindFirstPageViewModel(viewModel: FirstPageViewModel): ViewModel
 
-     @Binds
-     @IntoMap
-     @ViewModelKey(WorkItemListViewModel::class)
-     abstract fun bindWorkItemListViewModel(viewModel: WorkItemListViewModel): ViewModel
 
-     @Binds
-     @IntoMap
-     @ViewModelKey(WorkItemAddViewModel::class)
-     abstract fun bindWorkItemAddViewModel(viewModel: WorkItemAddViewModel): ViewModel*/
 }

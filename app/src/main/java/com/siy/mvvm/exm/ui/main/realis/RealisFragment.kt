@@ -3,7 +3,9 @@ package com.siy.mvvm.exm.ui.main.realis
 import android.view.View
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.base.ui.BaseLazyFragment
+import com.siy.mvvm.exm.base.ui.navigateAnimate
 import com.siy.mvvm.exm.databinding.FragmentLvzhiBinding
+import com.siy.mvvm.exm.ui.main.MainFragmentDirections
 
 class RealisFragment(override val layoutId: Int = R.layout.fragment_lvzhi) : BaseLazyFragment<FragmentLvzhiBinding>() {
     override fun initViewsAndEvents(view: View) {
@@ -13,16 +15,16 @@ class RealisFragment(override val layoutId: Int = R.layout.fragment_lvzhi) : Bas
     }
 
     /**
-     * 岗位职责
+     * 首页
      */
-    fun toAccountability(){
-   //     navController.navigateAnimate(MainFragmentDirections.actionMainFragmentToAccountabilityFragment())
+    fun toMainPage(){
+        navController.navigateAnimate(MainFragmentDirections.actionMainFragmentToFirstPageFragment())
     }
 
     /**
-     * 工作项目
+     * 体系
      */
-    fun toWorkItem(){
+    fun toSysPage(){
    //     navController.navigateAnimate(MainFragmentDirections.actionMainFragmentToWorkItemFragment())
     }
 

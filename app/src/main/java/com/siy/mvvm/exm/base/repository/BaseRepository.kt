@@ -63,7 +63,7 @@ abstract class BaseRepository {
                 } else {
                     emit(
                         Resource.error(
-                            if (result is BaseBean<*>) result.msg
+                            if (result is BaseBean<*>) result.errorMsg
                                 ?: "未知错误" else "未知错误", needResult
                         )
                     )
@@ -147,7 +147,7 @@ abstract class BaseRepository {
                                 result.addSource(dbSource) { newValue ->
                                     setValue(
                                         Resource.error(
-                                            if (fetchResult is BaseBean<*>) fetchResult.msg
+                                            if (fetchResult is BaseBean<*>) fetchResult.errorMsg
                                                 ?: "未知错误" else "未知错误", newValue
                                         )
                                     )

@@ -18,6 +18,7 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.siy.mvvm.exm.ui.login.LoginFragment"
+        tools:layout="@layout/fragment_login"
         android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_mainFragment"
@@ -30,5 +31,13 @@
         tools:layout="@layout/fragment_main"
         android:label="MainFragment">
 
+        <action
+            android:id="@+id/action_mainFragment_to_firstPageFragment"
+            app:destination="@id/firstPageFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/firstPageFragment"
+        tools:layout="@layout/fragment_firstpage_layout"
+        android:name="com.siy.mvvm.exm.ui.main.firstpage.FirstPageFragment"
+        android:label="FirstPageFragment" />
 </navigation>

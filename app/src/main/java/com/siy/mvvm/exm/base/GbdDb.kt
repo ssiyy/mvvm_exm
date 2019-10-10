@@ -2,7 +2,8 @@ package com.siy.mvvm.exm.base
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.siy.mvvm.exm.ui.login.Test
+import com.siy.mvvm.exm.db.dao.BannerDao
+import com.siy.mvvm.exm.ui.Banner
 
 
 /**
@@ -12,9 +13,9 @@ import com.siy.mvvm.exm.ui.login.Test
  */
 @Database(
     entities = [
-        Test::class], version = 1
+        Banner::class], version = 1
 )
 abstract class GbdDb : RoomDatabase() {
 
-
+    abstract fun bannerDao(): BannerDao
 }

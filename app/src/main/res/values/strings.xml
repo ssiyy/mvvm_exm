@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">mvvm_exm</string>
+
+
+    <string name="no_more_data">没有更多数据了</string>
+    <string name="no_data">无数据</string>
 </resources>

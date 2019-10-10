@@ -80,12 +80,12 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     /**
      * 用户名双向绑定
      */
-    val mUserName = MutableLiveData<String>()
+    val mUserName = MutableLiveData<String>("椿")
 
     /**
      * 密码双向绑定
      */
-    val mUserPwd = MutableLiveData<String>()
+    val mUserPwd = MutableLiveData<String>("湫")
 
     /**
      * 是否显示密码

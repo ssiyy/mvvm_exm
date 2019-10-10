@@ -27,11 +27,8 @@ class DbModule {
             .build()
     }
 
-   /* @Singleton
-    @Provides
-    fun accountabilityDao(db: GbdDb) = db.accountabilityDao()
-
     @Singleton
     @Provides
-    fun workItemDao(db: GbdDb) = db.workItemDao()*/
+    fun bannerDao(db: GbdDb) = db.bannerDao()
+
 }

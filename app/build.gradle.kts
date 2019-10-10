@@ -154,4 +154,7 @@ dependencies {
 
     //图片压缩
     implementation("top.zibin:Luban:1.1.8")
+
+    implementation ("com.github.bumptech.glide:glide:4.8.0")
+    kapt("com.github.bumptech.glide:compiler:4.8.0")
 }

@@ -22,8 +22,8 @@
                 android:textSize="14sp"
                 android:padding="20dp"
                 android:textColor="@android:color/black"
-                android:onClick="@{()->hostFrg.toAccountability()}"
-                android:text="岗位职责"
+                android:onClick="@{()->hostFrg.toMainPage()}"
+                android:text="首页"
                 android:layout_height="wrap_content"/>
 
         <TextView
@@ -31,8 +31,8 @@
                 android:textSize="14sp"
                 android:padding="20dp"
                 android:textColor="@android:color/black"
-                android:onClick="@{()->hostFrg.toWorkItem()}"
-                android:text="工作项目"
+                android:onClick="@{()->hostFrg.toSysPage()}"
+                android:text="体系"
                 android:layout_height="match_parent"/>
 
     </LinearLayout>

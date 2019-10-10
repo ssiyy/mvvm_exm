@@ -2,21 +2,57 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "68ec50183633d0b9eec637803e7c5b56",
+    "identityHash": "d83434f754f89f337171d35bc68d06dc",
     "entities": [
       {
-        "tableName": "work_item",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `gwzrzid` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "tableName": "banners",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `desc` TEXT NOT NULL, `image_path` TEXT NOT NULL, `is_visible` INTEGER NOT NULL, `order` INTEGER NOT NULL, `title` TEXT NOT NULL, `type` INTEGER NOT NULL, `url` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "desc",
+            "columnName": "desc",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "gwzrzid",
-            "columnName": "gwzrzid",
+            "fieldPath": "imagePath",
+            "columnName": "image_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isVisible",
+            "columnName": "is_visible",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -34,7 +70,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '68ec50183633d0b9eec637803e7c5b56')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd83434f754f89f337171d35bc68d06dc')"
     ]
   }
 }
