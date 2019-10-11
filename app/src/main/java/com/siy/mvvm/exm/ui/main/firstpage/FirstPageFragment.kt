@@ -82,6 +82,7 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
             adapter = ArticleListAdapter(null).apply {
                 this@FirstPageFragment.adapter = this
                 addHeaderView(headerView)
+                setHeaderAndEmpty(true)
             }
             setupRefreshLayout(srlLayout, recyclerView)
         }
@@ -114,9 +115,6 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
                 }
                 PAGESTATUS.ERROR, PAGESTATUS.END -> {
                     adapter.loadMoreEnd()
-                    it.message?.let { msg ->
-                        showToast(msg)
-                    }
                 }
                 else -> Unit
             }
@@ -130,9 +128,6 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
                     }
                 PAGESTATUS.ERROR, PAGESTATUS.COMPLETE -> {
                     stopRefresh()
-                    it.message?.let { msg ->
-                        showToast(msg)
-                    }
                 }
                 else -> Unit
             }
@@ -267,32 +262,39 @@ class FirstPageRep @Inject constructor(
     )
 
 
-    fun getArtclesByPage(search: String) = loadDataByPage(
-        {
-            articleDao.queryBySearchStr(search)
-        },
-        {
-            it
-        },
-        {
-            service.getHomeArticles(it!!)
-        },
-        { list, isRefresh ->
-            if (isRefresh) {
-                articleDao.deleteAll()
-            }
+    fun getArtclesByPage(search: String) =
+        loadDataByPage(
+            {
+                articleDao.queryBySearchStr(search)
+            },
+            {
+                it
+            },
+            {
+                if (search.isEmpty()) {
+                    service.getHomeArticles(it!!)
+                } else {
+                    //只做本地搜索
+                    null
+                }
+            },
+            { list, isRefresh ->
+                if (isRefresh) {
+                    articleDao.deleteAll()
+                }
 
-            if (!list.isNullOrEmpty()) {
-                val sum = articleDao.queryDataSum()
+                if (!list.isNullOrEmpty()) {
+                    val sum = articleDao.queryDataSum()
 
-                articleDao.insertAll(list.mapIndexed { index, article ->
-                    article._order_ = sum + index
-                    article
-                })
+                    articleDao.insertAll(list.mapIndexed { index, article ->
+                        article._order_ = sum + index
+                        article
+                    })
+                }
+            },
+            {
+                it?.data?.datas
             }
-        },
-        {
-            it.data?.datas
-        }
-    )
+        )
+
 }

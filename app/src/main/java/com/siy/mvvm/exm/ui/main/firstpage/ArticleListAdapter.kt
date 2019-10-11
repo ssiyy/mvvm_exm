@@ -12,18 +12,21 @@ import com.siy.mvvm.exm.views.recylerview.databindingadapter.BaseDataBindingAdap
  *
  * @author Siy
  */
-class ArticleListAdapter(datas:List<Article>?)  : BaseDataBindingAdapter<Article,ItemArticleBinding>(
-    R.layout.item_article,datas){
+class ArticleListAdapter(datas: List<Article>?) :
+    BaseDataBindingAdapter<Article, ItemArticleBinding>(
+        R.layout.item_article, datas
+    ) {
 
     override fun convert(binding: ItemArticleBinding?, item: Article) {
         binding?.article = item
     }
 
-    suspend fun asyncSetDisffData(newList:List<Article>?){
-        asyncDisffData(newList,DiffCallBack(newList,data))
+    suspend fun asyncSetDisffData(newList: List<Article>?) {
+        asyncDisffData(newList, DiffCallBack(newList, data))
     }
 
-    private class DiffCallBack(newList:List<Article>?,oldList:List<Article>) : BaseQuickDiffCallback<Article>(newList){
+    private class DiffCallBack(newList: List<Article>?, oldList: List<Article>) :
+        BaseQuickDiffCallback<Article>(newList) {
 
         init {
             setOldList(oldList)
