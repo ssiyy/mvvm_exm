@@ -1,4 +1,4 @@
-package com.siy.mvvm.exm.ui.main.firstpage
+package com.siy.mvvm.exm.ui.firstpage
 
 import android.view.View
 import android.view.ViewGroup

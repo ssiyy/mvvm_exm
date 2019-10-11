@@ -34,10 +34,32 @@
         <action
             android:id="@+id/action_mainFragment_to_firstPageFragment"
             app:destination="@id/firstPageFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_toRealisFragment"
+            app:destination="@id/toRealisFragment" />
     </fragment>
     <fragment
         android:id="@+id/firstPageFragment"
         tools:layout="@layout/fragment_firstpage_layout"
-        android:name="com.siy.mvvm.exm.ui.main.firstpage.FirstPageFragment"
+        android:name="com.siy.mvvm.exm.ui.firstpage.FirstPageFragment"
         android:label="FirstPageFragment" />
+    <fragment
+        android:id="@+id/forResultFragment"
+        tools:layout="@layout/fragment_for_result"
+        android:name="com.siy.mvvm.exm.ui.rorresult.ForResultFragment"
+        android:label="ForResultFragment" >
+        <argument
+            android:name="label"
+            app:argType="string"
+            android:defaultValue='"请输入"' />
+    </fragment>
+    <fragment
+        android:id="@+id/toRealisFragment"
+        android:name="com.siy.mvvm.exm.ui.main.realis.ToRealisFragment"
+        tools:layout="@layout/fragment_to_result"
+        android:label="ToRealisFragment" >
+        <action
+            android:id="@+id/action_toRealisFragment_to_forResultFragment"
+            app:destination="@id/forResultFragment" />
+    </fragment>
 </navigation>

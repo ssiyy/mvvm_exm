@@ -19,7 +19,7 @@ package com.siy.mvvm.exm.base
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.siy.mvvm.exm.ui.login.LoginViewModel
-import com.siy.mvvm.exm.ui.main.firstpage.FirstPageViewModel
+import com.siy.mvvm.exm.ui.firstpage.FirstPageViewModel
 import com.siy.mvvm.exm.viewmodel.GbdViewModelFactory
 import dagger.Binds
 import dagger.Module

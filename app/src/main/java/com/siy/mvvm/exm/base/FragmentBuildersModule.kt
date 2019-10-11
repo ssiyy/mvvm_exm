@@ -1,7 +1,7 @@
 package com.siy.mvvm.exm.base
 
 import com.siy.mvvm.exm.ui.login.LoginFragment
-import com.siy.mvvm.exm.ui.main.firstpage.FirstPageFragment
+import com.siy.mvvm.exm.ui.firstpage.FirstPageFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

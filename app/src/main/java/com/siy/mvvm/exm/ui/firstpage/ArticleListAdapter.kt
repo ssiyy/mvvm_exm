@@ -1,4 +1,4 @@
-package com.siy.mvvm.exm.ui.main.firstpage
+package com.siy.mvvm.exm.ui.firstpage
 
 import com.chad.library.adapter.base.diff.BaseQuickDiffCallback
 import com.siy.mvvm.exm.R
