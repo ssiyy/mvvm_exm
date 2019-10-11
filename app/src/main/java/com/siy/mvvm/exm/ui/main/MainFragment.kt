@@ -10,17 +10,54 @@ import com.siy.mvvm.exm.ui.main.me.MyFragment
 import com.siy.mvvm.exm.ui.main.message.MessageFragment
 import com.siy.mvvm.exm.ui.main.realis.RealisFragment
 import com.siy.mvvm.exm.ui.main.search.SearchFragment
+import com.siy.mvvm.exm.utils.GDB_ERROR
+import com.siy.mvvm.exm.utils.autoDisposable
+import com.siy.mvvm.exm.utils.showToast
 import com.siy.mvvm.exm.views.MainIndicator
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
+import io.reactivex.processors.PublishProcessor
+import java.util.concurrent.TimeUnit
 
-class MainFragment(override val layoutId: Int = R.layout.fragment_main) : BaseFragment<FragmentMainBinding>() {
+class MainFragment(
+    override val layoutId: Int = R.layout.fragment_main,
+    override val regBackPressed: Boolean = true
+) :
+    BaseFragment<FragmentMainBinding>() {
+
+    /**
+     * 用来判断是否是单击的
+     */
+    private val backPressProessor = PublishProcessor.create<Byte>()
+
+    override fun onBackPressed() {
+        backPressProessor.onNext(0.toByte())
+    }
+
+    /**
+     * 注册判断点击的逻辑
+     */
+    private fun registerBackPress() {
+        backPressProessor.buffer(backPressProessor.debounce(500, TimeUnit.MILLISECONDS))
+            .observeOn(AndroidSchedulers.mainThread())
+            .`as`(autoDisposable())
+            .subscribe(Consumer {
+                if (it.size < 2) {
+                    showToast("快速点击2次返回键退出")
+                } else {
+                    requireActivity().finish()
+                }
+            }, GDB_ERROR)
+    }
 
     override fun initViewsAndEvents(view: View) {
+        registerBackPress()
         initPages()
     }
 
-
     private fun initPages() {
-        val fragments = listOf<Fragment>(MessageFragment(), RealisFragment(), SearchFragment(), MyFragment())
+        val fragments =
+            listOf<Fragment>(MessageFragment(), RealisFragment(), SearchFragment(), MyFragment())
         val adapter = object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int) = fragments[position]
 

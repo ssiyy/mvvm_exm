@@ -20,8 +20,7 @@ import javax.inject.Inject
  * @author Siy
  */
 class LoginFragment(
-    override val layoutId: Int = R.layout.fragment_login,
-    override val regBackPressed: Boolean = false
+    override val layoutId: Int = R.layout.fragment_login
 ) : BaseFragment<FragmentLoginBinding>(), Injectable {
 
     @Inject
