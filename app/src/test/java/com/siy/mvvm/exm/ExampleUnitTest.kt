@@ -9,6 +9,8 @@ import org.junit.Test
  */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
+    fun testDagger2() {
+        val classRoom = ClassRoom()
+        classRoom.printName()
     }
 }
