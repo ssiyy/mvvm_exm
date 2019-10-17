@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -80,7 +81,8 @@
                 android:loadMoreEnable="@{true}"
                 android:onItemClick="@{(a,b,c)->click1s.onItemClick.invoke(c)}"
                 android:onLoadMore="@{()->click0s.onLoadMore.invoke()}"
-                bind:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                bind:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_article" />
         </com.siy.mvvm.exm.views.ScrollChildSwipeRefreshLayout>
     </LinearLayout>
 </layout>

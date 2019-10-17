@@ -12,6 +12,7 @@ import com.siy.mvvm.exm.base.GbdDb
 import com.siy.mvvm.exm.base.Injectable
 import com.siy.mvvm.exm.base.repository.BaseRepository
 import com.siy.mvvm.exm.base.ui.BaseFragment
+import com.siy.mvvm.exm.base.ui.navigateAnimate
 import com.siy.mvvm.exm.databinding.FragmentFirstpageLayoutBinding
 import com.siy.mvvm.exm.db.dao.ArticleDao
 import com.siy.mvvm.exm.db.dao.BannerDao
@@ -19,7 +20,10 @@ import com.siy.mvvm.exm.http.GbdService
 import com.siy.mvvm.exm.http.PAGESTATUS
 import com.siy.mvvm.exm.http.Status
 import com.siy.mvvm.exm.ui.Banner
-import com.siy.mvvm.exm.utils.*
+import com.siy.mvvm.exm.utils.autoCleared
+import com.siy.mvvm.exm.utils.dip2px
+import com.siy.mvvm.exm.utils.inflater
+import com.siy.mvvm.exm.utils.setupRefreshLayout
 import com.siy.mvvm.exm.views.header.CommonHeader
 import com.siy.mvvm.exm.views.loopingviewpager.LoopViewPager
 import com.siy.mvvm.exm.views.search.AutoSearch
@@ -74,14 +78,24 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
                         fun(postion: Int) {
                             val item = this@FirstPageFragment.adapter.getItem(postion)
                             item?.let {
-                                showToast(it.title)
+                                navController.navigateAnimate(
+                                    FirstPageFragmentDirections.actionFirstPageFragmentToWebViewFragment(
+                                        it.link
+                                    )
+                                )
                             }
                         }
             )
 
             adapter = ArticleListAdapter(null).apply {
                 this@FirstPageFragment.adapter = this
-                addHeaderView(headerView)
+
+                addHeaderView(LoopViewPager(context).apply {
+                    layoutParams =
+                        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dip2px(200f))
+                    headerView = this
+                })
+
                 setHeaderAndEmpty(true)
             }
             setupRefreshLayout(srlLayout, recyclerView)
@@ -143,11 +157,7 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
         }
     }
 
-    private val headerView by lazy {
-        LoopViewPager(context).apply {
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dip2px(200f))
-        }
-    }
+    private lateinit var headerView: LoopViewPager
 
     private fun addBanner(banners: List<Banner>?) {
         if (!banners.isNullOrEmpty()) {

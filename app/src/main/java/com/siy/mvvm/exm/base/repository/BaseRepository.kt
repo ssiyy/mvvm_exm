@@ -45,7 +45,7 @@ abstract class BaseRepository {
             if (it is BaseBean<*>) {
                 it.isSuccess()
             } else {
-                true
+                false
             }
         }
     ) = liveData(Dispatchers.IO) {

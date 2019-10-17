@@ -42,7 +42,11 @@
         android:id="@+id/firstPageFragment"
         tools:layout="@layout/fragment_firstpage_layout"
         android:name="com.siy.mvvm.exm.ui.firstpage.FirstPageFragment"
-        android:label="FirstPageFragment" />
+        android:label="FirstPageFragment" >
+        <action
+            android:id="@+id/action_firstPageFragment_to_webViewFragment"
+            app:destination="@id/webViewFragment" />
+    </fragment>
     <fragment
         android:id="@+id/forResultFragment"
         tools:layout="@layout/fragment_for_result"
@@ -61,5 +65,14 @@
         <action
             android:id="@+id/action_toRealisFragment_to_forResultFragment"
             app:destination="@id/forResultFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/webViewFragment"
+        android:name="com.siy.mvvm.exm.ui.webview.WebViewFragment"
+        tools:layout="@layout/fragment_webview_layout"
+        android:label="WebViewFragment" >
+        <argument
+            android:name="url"
+            app:argType="string" />
     </fragment>
 </navigation>
