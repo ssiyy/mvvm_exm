@@ -32,7 +32,26 @@ import javax.inject.Singleton
 
 
 /**
+ *
  * Created by Siy on 2019/10/10.
+ *
+ * 关于Navigation切换界面调用onDestroyView()和onCreateView()状态保留问题
+ * Ian Lake：
+ * 您不必每次调用onCreateView时都为新视图inflater-您可以保留对您第一次创建的View的引用，然后再次返回它。当然，对于不可见的内容，这会不断浪费内存和资源。
+ *
+ *  关于保留视图的引用，内存泄露问题：
+ *  Ian Lake：
+ *  确保您没有将setRetainInstance(true)与带有Views的Fragments一起使用，或者不在ViewModel中存储任何引用context的Views和things
+ *  由于视图引用了旧的上下文，因此视图将永远无法幸免于配置更改驱动的活动。
+ *
+ *  Ian Lake Tips:
+ *  请记住，即使不缓存视图本身，“片段”视图也会自动保存和恢复其状态。如果不是这种情况，则应首先解决该问题（确保视图具有android：id等）。否则，保留片段中的视图不是泄漏。
+ *
+ *
+ * @see <a href="https://issuetracker.google.com/issues/109856764">Issue Tracker -  Transaction type is not available with Navigation Architecture Component</a>
+ * @see <a href="https://issuetracker.google.com/issues/127932815">Issue Tracker -   Open fragment without lose the previous fragment states</a>
+ * @see <a href="https://github.com/android/architecture-components-samples/issues/530">github -  architecture-components-samples</a>
+ * @see <a href="http://twitter.com/ianhlake/status/1103522856535638016">twitter - Ian Lake(Navigation)</a>
  *
  * @author Siy
  */
@@ -61,7 +80,7 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
                 }
             }
 
-            search = object : AutoSearch(viewLifecycleOwner) {
+            search = object : AutoSearch(viewLifecycleOwner, viewModel.searchStr.value) {
                 override fun searchApi(searchStr: String) {
                     viewModel.showArctiles(searchStr)
                 }
@@ -101,14 +120,13 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
             setupRefreshLayout(srlLayout, recyclerView)
         }
         setUpObserver()
-        viewModel.showArctiles(mViewDataBinding?.search?.searchStr?.value ?: "")
     }
 
 
     private fun setUpObserver() {
         viewModel.banners.observe(viewLifecycleOwner) {
             when (it.status) {
-                Status.SUCCESS -> lifecycleScope.launchWhenStarted {
+                Status.SUCCESS -> {
                     hideLoadingDialog()
                     addBanner(it.data)
                 }
@@ -117,9 +135,7 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
         }
 
         viewModel.articleList.observe(viewLifecycleOwner) {
-            lifecycleScope.launchWhenStarted {
-                adapter.asyncSetDisffData(it)
-            }
+            adapter.syncSetDisffData(it)
         }
 
         viewModel.loadState.observe(viewLifecycleOwner) {
@@ -195,8 +211,11 @@ class FirstPageViewModel @Inject constructor(
     /**
      * 搜索的关键字
      */
-    private val searchStr = MutableLiveData<String>()
-    private val articleResult = searchStr.map {
+    private val _searchStr = MutableLiveData<String>()
+    val searchStr: LiveData<String>
+        get() = _searchStr
+
+    private val articleResult = _searchStr.map {
         rep.getArtclesByPage(it)
     }
 
@@ -237,10 +256,10 @@ class FirstPageViewModel @Inject constructor(
     }
 
     fun showArctiles(str: String): Boolean {
-        if (searchStr.value == str) {
+        if (_searchStr.value == str) {
             return false
         }
-        searchStr.value = str
+        _searchStr.value = str
         return true
     }
 }

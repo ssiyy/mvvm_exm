@@ -54,12 +54,12 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
      * 这段代码来自于：Using Navigation Architecture Component in a large banking app
      *
      * @param result 返回结果
-     *
-     *
      * @see <a href="https://medium.com/google-developer-experts/using-navigation-architecture-component-in-a-large-banking-app-ac84936a42c2">Using Navigation Architecture Component in a large banking app</a>
+     * @see <a href="https://issuetracker.google.com/issues/79672220">Issue Tracker - Navigation: startActivityForResult analog</a>
      */
     fun navigateBackWithResult(result: Bundle) {
-        val childFragmentManager = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.childFragmentManager
+        val childFragmentManager =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment)?.childFragmentManager
         var backStackListener: FragmentManager.OnBackStackChangedListener by Delegates.notNull()
         backStackListener = FragmentManager.OnBackStackChangedListener {
             (childFragmentManager?.fragments?.get(0) as NavigationResult).onNavigationResult(result)
@@ -71,18 +71,19 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     private fun navController() = Navigation.findNavController(this, R.id.nav_host_fragment)
 
-    private fun isShouldHideInput(v: View?, event: MotionEvent?) = if (v is EditText && event != null) {
-        val l = intArrayOf(0, 0)
-        v.getLocationInWindow(l)
-        val left = l[0]
-        val top = l[1]
-        val bottom = top + v.getHeight()
-        val right = left + v.getWidth()
-        !(event.x > left && event.x < right
-                && event.y > top && event.y < bottom)
-    } else {
-        false
-    }
+    private fun isShouldHideInput(v: View?, event: MotionEvent?) =
+        if (v is EditText && event != null) {
+            val l = intArrayOf(0, 0)
+            v.getLocationInWindow(l)
+            val left = l[0]
+            val top = l[1]
+            val bottom = top + v.getHeight()
+            val right = left + v.getWidth()
+            !(event.x > left && event.x < right
+                    && event.y > top && event.y < bottom)
+        } else {
+            false
+        }
 
     private fun hideSoftInput() = currentFocus?.let {
         val im = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

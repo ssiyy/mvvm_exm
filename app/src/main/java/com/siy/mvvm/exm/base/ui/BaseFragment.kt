@@ -72,21 +72,11 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return getContentViewInternal(inflater, container)
-            ?: super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initBinding(view)
         initViewsAndEvents(view, savedInstanceState)
-    }
-
-    private fun initBinding(view: View) {
-        if (layoutId != View.NO_ID) {
-            //如果传递的是资源id就绑定
-            mViewDataBinding = DataBindingUtil.bind(view)
-            mViewDataBinding?.lifecycleOwner = this
-        }
     }
 
     private fun createLoadingDialog(msg: CharSequence?): SystemDialog {
@@ -133,7 +123,9 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
     }
 
     private fun getContentViewInternal(inflater: LayoutInflater, container: ViewGroup?) = if (layoutId != View.NO_ID) {
-        inflater.inflate(layoutId, container, false)
+        mViewDataBinding = DataBindingUtil.inflate(inflater,layoutId,container,false)
+        mViewDataBinding?.lifecycleOwner = this
+        mViewDataBinding?.root?:getContentView(inflater, container)
     } else getContentView(inflater, container)
 
     /**

@@ -25,6 +25,10 @@ class ArticleListAdapter(datas: List<Article>?) :
         asyncDisffData(newList, DiffCallBack(newList, data))
     }
 
+     fun syncSetDisffData(newList: List<Article>?) {
+        syncDisffData(DiffCallBack(newList, data))
+    }
+
     private class DiffCallBack(newList: List<Article>?, oldList: List<Article>) :
         BaseQuickDiffCallback<Article>(newList) {
 

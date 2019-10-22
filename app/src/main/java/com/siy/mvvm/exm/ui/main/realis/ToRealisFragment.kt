@@ -18,8 +18,6 @@ import com.siy.mvvm.exm.utils.NavigationResult
 class ToRealisFragment(override val layoutId: Int = R.layout.fragment_to_result) :
     BaseFragment<FragmentToResultBinding>(), NavigationResult {
 
-
-
     private var result = MutableLiveData<String>()
 
     override fun initViewsAndEvents(view: View) {

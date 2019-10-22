@@ -18,7 +18,8 @@ import kotlinx.coroutines.withContext
  *
  * @author Siy
  */
-abstract class BaseDataBindingAdapter<T, B : ViewDataBinding> : BaseQuickAdapter<T, BaseBindingViewHolder<B>> {
+abstract class BaseDataBindingAdapter<T, B : ViewDataBinding> :
+    BaseQuickAdapter<T, BaseBindingViewHolder<B>> {
 
     constructor(@LayoutRes layoutRes: Int, data: List<T>?) : super(layoutRes, data)
 
@@ -31,7 +32,10 @@ abstract class BaseDataBindingAdapter<T, B : ViewDataBinding> : BaseQuickAdapter
         return BaseBindingViewHolder(view)
     }
 
-    override fun createBaseViewHolder(parent: ViewGroup?, layoutResId: Int): BaseBindingViewHolder<B> {
+    override fun createBaseViewHolder(
+        parent: ViewGroup?,
+        layoutResId: Int
+    ): BaseBindingViewHolder<B> {
         val b = DataBindingUtil.inflate<B>(mLayoutInflater, layoutResId, parent, false)
         val view = b?.root ?: getItemView(layoutResId, parent)
         val holder = BaseBindingViewHolder<B>(view)
@@ -53,6 +57,9 @@ abstract class BaseDataBindingAdapter<T, B : ViewDataBinding> : BaseQuickAdapter
         val result = withContext(Dispatchers.Default) {
             DiffUtil.calculateDiff(diffCallBack, false)
         }
-        setNewDiffData(result, newData?: listOf())
+        setNewDiffData(result, newData ?: listOf())
     }
+
+    fun syncDisffData(diffCallBack: BaseQuickDiffCallback<T>) = setNewDiffData(diffCallBack)
+
 }

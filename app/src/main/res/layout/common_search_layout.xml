@@ -41,7 +41,7 @@
             android:textColor="#2D2A2A"
             android:textColorHint="#757575"
             android:textSize="14sp"
-            bind:onEditorActionListener="@{(v,a,e)->search.onEditorAction(v,a,e)}"
+            bind:onEditorActionListener="@{(v,a,e)->search.onEditorAction(v,a)}"
             tools:text="输入内容" />
     </LinearLayout>
 </layout>

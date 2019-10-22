@@ -17,7 +17,8 @@ import kotlinx.coroutines.reactive.asFlow
  *
  * @author Siy
  */
-abstract class AutoSearch(mOwner: LifecycleOwner) : CommonSearch() {
+abstract class AutoSearch(mOwner: LifecycleOwner, initSearchStr: String? = "") :
+    CommonSearch(initSearchStr) {
 
     init {
         //自动搜索
