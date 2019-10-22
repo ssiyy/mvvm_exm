@@ -6,10 +6,12 @@ import android.widget.ImageView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import androidx.viewpager.widget.PagerAdapter
-import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.base.GbdDb
 import com.siy.mvvm.exm.base.Injectable
+import com.siy.mvvm.exm.base.glide.GlideApp
 import com.siy.mvvm.exm.base.repository.BaseRepository
 import com.siy.mvvm.exm.base.ui.BaseFragment
 import com.siy.mvvm.exm.base.ui.navigateAnimate
@@ -126,7 +128,7 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
     private fun setUpObserver() {
         viewModel.banners.observe(viewLifecycleOwner) {
             when (it.status) {
-                Status.SUCCESS -> {
+                Status.SUCCESS,Status.ERROR -> {
                     hideLoadingDialog()
                     addBanner(it.data)
                 }
@@ -192,7 +194,11 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
             val view1 = view.findViewById<ImageView>(R.id.imageview)
             view1.scaleType = ImageView.ScaleType.CENTER_CROP
             view1.setBackgroundResource(R.drawable.common_shape_banner_bg)
-            Glide.with(container.context).load(banners[position].imagePath).into(view1)
+            GlideApp.with(container.context)
+                    .load(banners[position].imagePath)
+                    .transition(DrawableTransitionOptions.withCrossFade(600))
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .into(view1)
             container.addView(view)
             return view
         }

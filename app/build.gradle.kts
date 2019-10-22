@@ -156,5 +156,6 @@ dependencies {
     implementation("top.zibin:Luban:1.1.8")
 
     implementation ("com.github.bumptech.glide:glide:4.8.0")
+    implementation("com.github.bumptech.glide:okhttp3-integration:4.3.1")
     kapt("com.github.bumptech.glide:compiler:4.8.0")
 }
