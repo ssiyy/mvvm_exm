@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
+import androidx.navigation.findNavController
 import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -22,13 +23,18 @@ import com.siy.mvvm.exm.http.GbdService
 import com.siy.mvvm.exm.http.PAGESTATUS
 import com.siy.mvvm.exm.http.Status
 import com.siy.mvvm.exm.ui.Banner
-import com.siy.mvvm.exm.utils.autoCleared
 import com.siy.mvvm.exm.utils.dip2px
 import com.siy.mvvm.exm.utils.inflater
 import com.siy.mvvm.exm.utils.setupRefreshLayout
+import com.siy.mvvm.exm.utils.throttleFist
 import com.siy.mvvm.exm.views.header.CommonHeader
+import com.siy.mvvm.exm.views.loopingviewpager.LoopPagerAdapterWrapper
 import com.siy.mvvm.exm.views.loopingviewpager.LoopViewPager
 import com.siy.mvvm.exm.views.search.AutoSearch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import ru.ldralighieri.corbind.view.clicks
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -63,13 +69,23 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private var adapter by autoCleared<ArticleListAdapter>()
-
     private val viewModel: FirstPageViewModel by viewModels {
         viewModelFactory
     }
 
     override fun initViewsAndEvents(view: View) {
+        var bannerAdapter: LoopPagerAdapterWrapper
+        val artAdapter = ArticleListAdapter(null).apply {
+            addHeaderView(LoopViewPager(context).apply {
+                layoutParams =
+                    ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dip2px(200f))
+                adapter = BannerAdapter(viewLifecycleOwner.lifecycleScope)
+                bannerAdapter = wrapperAdapter
+            })
+            headerLayout?.id = R.id.rv_header_id
+            setHeaderAndEmpty(true)
+        }
+
         mViewDataBinding?.run {
             header = object : CommonHeader() {
                 init {
@@ -97,7 +113,7 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
             click1s = mapOf(
                 "onItemClick" to
                         fun(postion: Int) {
-                            val item = this@FirstPageFragment.adapter.getItem(postion)
+                            val item = artAdapter.getItem(postion)
                             item?.let {
                                 navController.navigateAnimate(
                                     FirstPageFragmentDirections.actionFirstPageFragmentToWebViewFragment(
@@ -107,30 +123,20 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
                             }
                         }
             )
-
-            adapter = ArticleListAdapter(null).apply {
-                this@FirstPageFragment.adapter = this
-
-                addHeaderView(LoopViewPager(context).apply {
-                    layoutParams =
-                        ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dip2px(200f))
-                    headerView = this
-                })
-
-                setHeaderAndEmpty(true)
-            }
+            adapter = artAdapter
             setupRefreshLayout(srlLayout, recyclerView)
         }
-        setUpObserver()
+        setUpObserver(artAdapter, bannerAdapter)
     }
 
 
-    private fun setUpObserver() {
+    private fun setUpObserver(adapter: ArticleListAdapter, bannerAdapter: LoopPagerAdapterWrapper) {
         viewModel.banners.observe(viewLifecycleOwner) {
             when (it.status) {
-                Status.SUCCESS,Status.ERROR -> {
+                Status.SUCCESS, Status.ERROR -> {
                     hideLoadingDialog()
-                    addBanner(it.data)
+                    (bannerAdapter.realAdapter as BannerAdapter).setDatas(it.data)
+                    bannerAdapter.realAdapter.notifyDataSetChanged()
                 }
                 else -> Unit
             }
@@ -175,30 +181,45 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
         }
     }
 
-    private lateinit var headerView: LoopViewPager
+    class BannerAdapter(
+        private val scope: CoroutineScope,
+        private var banners: List<Banner>? = null
+    ) :
+        PagerAdapter() {
 
-    private fun addBanner(banners: List<Banner>?) {
-        if (!banners.isNullOrEmpty()) {
-            headerView.adapter = BannerAdapter(banners)
+        fun setDatas(banners: List<Banner>?) {
+            this.banners = banners
+            //  notifyDataSetChanged()
         }
-    }
-
-    class BannerAdapter(private var banners: List<Banner>) : PagerAdapter() {
 
         override fun isViewFromObject(view: View, `object`: Any) = view == `object`
 
-        override fun getCount() = banners.size
+        override fun getCount() = banners?.size ?: 0
 
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
-            val view = container.inflater.inflate(R.layout.fleet_free_banner_view, null, false)
+            val view = container.inflater.inflate(R.layout.fleet_free_banner_view, container, false)
             val view1 = view.findViewById<ImageView>(R.id.imageview)
             view1.scaleType = ImageView.ScaleType.CENTER_CROP
             view1.setBackgroundResource(R.drawable.common_shape_banner_bg)
-            GlideApp.with(container.context)
-                    .load(banners[position].imagePath)
+
+            val item = banners?.get(position)
+            item?.let { banner ->
+                view1.clicks()
+                    .throttleFist(1000)
+                    .onEach {
+                        view1.findNavController().navigateAnimate(
+                            FirstPageFragmentDirections.actionFirstPageFragmentToWebViewFragment(
+                                banner.url
+                            )
+                        )
+                    }.launchIn(scope)
+
+                GlideApp.with(container.context)
+                    .load(banner.imagePath)
                     .transition(DrawableTransitionOptions.withCrossFade(600))
                     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                     .into(view1)
+            }
             container.addView(view)
             return view
         }

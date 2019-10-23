@@ -38,6 +38,9 @@ import com.uber.autodispose.AutoDispose
 import com.uber.autodispose.AutoDisposeConverter
 import com.uber.autodispose.android.lifecycle.AndroidLifecycleScopeProvider
 import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -47,6 +50,23 @@ import java.io.StringWriter
  *
  * @author Siy
  */
+
+fun <T> Flow<T>.throttleFist(windowDuration: Long): Flow<T> = flow {
+    var windowStartTime = System.currentTimeMillis()
+    var emitted = false
+    collect { value ->
+        val currentTime = System.currentTimeMillis()
+        val delta = currentTime - windowStartTime
+        if (delta >= windowDuration) {
+            windowStartTime += delta / windowDuration * windowDuration
+            emitted = false
+        }
+        if (!emitted) {
+            emit(value)
+            emitted = true
+        }
+    }
+}
 
 
 inline fun <reified R, T> R.pref(default: T, mode: Preference.MODE = Preference.MODE.STROGE_SP) =

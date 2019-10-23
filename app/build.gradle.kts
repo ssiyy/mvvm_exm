@@ -93,8 +93,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.3.1")
 
     //rx 权限管理
-    implementation("com.github.tbruyelle:rxpermissions:0.10.2")
-    implementation("com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha2")
+    // implementation("com.github.tbruyelle:rxpermissions:0.10.2")
+   //implementation("com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha2")
 
 
     //kotlin
@@ -154,6 +154,9 @@ dependencies {
 
     //图片压缩
     implementation("top.zibin:Luban:1.1.8")
+
+    //Kottlin版本的Rxbinding
+    implementation("ru.ldralighieri.corbind:corbind:1.2.0")
 
     implementation ("com.github.bumptech.glide:glide:4.8.0")
     implementation("com.github.bumptech.glide:okhttp3-integration:4.3.1")
