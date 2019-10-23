@@ -64,7 +64,7 @@ import javax.inject.Singleton
  * @author Siy
  */
 class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage_layout) :
-    BaseFragment<FragmentFirstpageLayoutBinding>(), Injectable {
+        BaseFragment<FragmentFirstpageLayoutBinding>(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -74,14 +74,14 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
     }
 
     override fun initViewsAndEvents(view: View) {
-        var bannerAdapter: LoopPagerAdapterWrapper
-        val artAdapter = ArticleListAdapter(null).apply {
-            addHeaderView(LoopViewPager(context).apply {
-                layoutParams =
+        val headerView = LoopViewPager(context).apply {
+            layoutParams =
                     ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dip2px(200f))
-                adapter = BannerAdapter(viewLifecycleOwner.lifecycleScope)
-                bannerAdapter = wrapperAdapter
-            })
+            adapter = BannerAdapter(viewLifecycleOwner.lifecycleScope)
+        }
+
+        val artAdapter = ArticleListAdapter(null).apply {
+            addHeaderView(headerView)
             headerLayout?.id = R.id.rv_header_id
             setHeaderAndEmpty(true)
         }
@@ -106,37 +106,36 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
             }
 
             click0s = mapOf(
-                "onRefresh" to viewModel::refresh,
-                "onLoadMore" to viewModel::loadMore
+                    "onRefresh" to viewModel::refresh,
+                    "onLoadMore" to viewModel::loadMore
             )
 
             click1s = mapOf(
-                "onItemClick" to
-                        fun(postion: Int) {
-                            val item = artAdapter.getItem(postion)
-                            item?.let {
-                                navController.navigateAnimate(
-                                    FirstPageFragmentDirections.actionFirstPageFragmentToWebViewFragment(
-                                        it.link
+                    "onItemClick" to
+                            fun(postion: Int) {
+                                val item = artAdapter.getItem(postion)
+                                item?.let {
+                                    navController.navigateAnimate(
+                                            FirstPageFragmentDirections.actionFirstPageFragmentToWebViewFragment(
+                                                    it.link
+                                            )
                                     )
-                                )
+                                }
                             }
-                        }
             )
             adapter = artAdapter
             setupRefreshLayout(srlLayout, recyclerView)
         }
-        setUpObserver(artAdapter, bannerAdapter)
+        setUpObserver(artAdapter, headerView)
     }
 
 
-    private fun setUpObserver(adapter: ArticleListAdapter, bannerAdapter: LoopPagerAdapterWrapper) {
+    private fun setUpObserver(adapter: ArticleListAdapter, headerView: LoopViewPager) {
         viewModel.banners.observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS, Status.ERROR -> {
                     hideLoadingDialog()
-                    (bannerAdapter.realAdapter as BannerAdapter).setDatas(it.data)
-                    bannerAdapter.notifyDataSetChanged()
+                    headerView.adapter = BannerAdapter(viewLifecycleOwner.lifecycleScope, it.data)
                 }
                 else -> Unit
             }
@@ -182,15 +181,9 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
     }
 
     class BannerAdapter(
-        private val scope: CoroutineScope,
-        private var banners: List<Banner>? = null
-    ) :
-        PagerAdapter() {
-
-        fun setDatas(banners: List<Banner>?) {
-            this.banners = banners
-            //  notifyDataSetChanged()
-        }
+            private val scope: CoroutineScope,
+            private var banners: List<Banner>? = null
+    ) : PagerAdapter() {
 
         override fun isViewFromObject(view: View, `object`: Any) = view == `object`
 
@@ -205,20 +198,20 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
             val item = banners?.get(position)
             item?.let { banner ->
                 view1.clicks()
-                    .throttleFist(1000)
-                    .onEach {
-                        view1.findNavController().navigateAnimate(
-                            FirstPageFragmentDirections.actionFirstPageFragmentToWebViewFragment(
-                                banner.url
+                        .throttleFist(1000)
+                        .onEach {
+                            view1.findNavController().navigateAnimate(
+                                    FirstPageFragmentDirections.actionFirstPageFragmentToWebViewFragment(
+                                            banner.url
+                                    )
                             )
-                        )
-                    }.launchIn(scope)
+                        }.launchIn(scope)
 
                 GlideApp.with(container.context)
-                    .load(banner.imagePath)
-                    .transition(DrawableTransitionOptions.withCrossFade(600))
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                    .into(view1)
+                        .load(banner.imagePath)
+                        .transition(DrawableTransitionOptions.withCrossFade(600))
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                        .into(view1)
             }
             container.addView(view)
             return view
@@ -227,11 +220,20 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
         override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
             container.removeView(`object` as View)
         }
+
+        override fun getItemPosition(`object`: Any): Int {
+            val index = banners?.indexOf(`object`) ?: -1
+            return if (index == -1) {
+                POSITION_NONE
+            } else {
+                index
+            }
+        }
     }
 }
 
 class FirstPageViewModel @Inject constructor(
-    rep: FirstPageRep
+        rep: FirstPageRep
 ) : ViewModel() {
     val banners = rep.getBanners()
 
@@ -293,64 +295,64 @@ class FirstPageViewModel @Inject constructor(
 
 @Singleton
 class FirstPageRep @Inject constructor(
-    private val service: GbdService,
-    private val bannerDao: BannerDao,
-    private val articleDao: ArticleDao,
-    private val db: GbdDb
+        private val service: GbdService,
+        private val bannerDao: BannerDao,
+        private val articleDao: ArticleDao,
+        private val db: GbdDb
 
 ) : BaseRepository() {
 
 
     fun getBanners() = loadData(
-        {
-            bannerDao.queryAll()
-        },
-        {
-            service.getBanner()
-        }, {
-            db.runInTransaction {
-                bannerDao.deleteAll()
-                it?.let { banners ->
-                    bannerDao.insertAll(banners)
-                }
+            {
+                bannerDao.queryAll()
+            },
+            {
+                service.getBanner()
+            }, {
+        db.runInTransaction {
+            bannerDao.deleteAll()
+            it?.let { banners ->
+                bannerDao.insertAll(banners)
             }
         }
+    }
     )
 
 
     fun getArtclesByPage(search: String) =
-        loadDataByPage(
-            {
-                articleDao.queryBySearchStr(search)
-            },
-            {
-                it
-            },
-            {
-                if (search.isEmpty()) {
-                    service.getHomeArticles(it!!)
-                } else {
-                    //只做本地搜索
-                    null
-                }
-            },
-            { list, isRefresh ->
-                if (isRefresh) {
-                    articleDao.deleteAll()
-                }
+            loadDataByPage(
+                    {
+                        articleDao.queryBySearchStr(search)
+                    },
+                    {
+                        it
+                    },
+                    {
+                        if (search.isEmpty()) {
+                            service.getHomeArticles(it!!)
+                        } else {
+                            //只做本地搜索
+                            null
+                        }
+                    },
+                    { list, isRefresh ->
+                        if (isRefresh) {
+                            articleDao.deleteAll()
+                        }
 
-                if (!list.isNullOrEmpty()) {
-                    val sum = articleDao.queryDataSum()
+                        if (!list.isNullOrEmpty()) {
+                            val sum = articleDao.queryDataSum()
 
-                    articleDao.insertAll(list.mapIndexed { index, article ->
-                        article._order_ = sum + index
-                        article
-                    })
-                }
-            },
-            {
-                it?.data?.datas
-            }
-        )
+                            articleDao.insertAll(list.mapIndexed { index, article ->
+                                article._order_ = sum + index
+                                article
+                            })
+                        }
+                    },
+                    {
+                        it?.data?.datas
+                    }
+            )
 
 }

@@ -95,10 +95,6 @@ public class LoopViewPager extends CommonViewPager {
         return mAdapter != null ? mAdapter.getRealAdapter() : mAdapter;
     }
 
-    public LoopPagerAdapterWrapper getWrapperAdapter(){
-        return mAdapter;
-    }
-
     @Override
     public int getCurrentItem() {
         return mAdapter != null ? mAdapter.toRealPosition(super.getCurrentItem()) : 0;
