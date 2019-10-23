@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import com.chad.library.adapter.base.BaseQuickAdapter
 import com.siy.mvvm.exm.R
 
 
@@ -23,14 +24,14 @@ class ArticleListLinearLayoutManager : LinearLayoutManager {
 
 
     constructor(context: Context, orientation: Int, reverseLayout: Boolean) : super(
-        context,
-        orientation,
-        reverseLayout
+            context,
+            orientation,
+            reverseLayout
     )
 
     constructor(
-        context: Context, attrs: AttributeSet, defStyleAttr: Int,
-        defStyleRes: Int
+            context: Context, attrs: AttributeSet, defStyleAttr: Int,
+            defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
 
 
@@ -45,7 +46,7 @@ class ArticleListLinearLayoutManager : LinearLayoutManager {
         return bundle
     }
 
-    /* fun getRecylerView() =
+     private fun getRecylerView() =
          try {
              val c = RecyclerView.LayoutManager::class.java
              val f = c.getDeclaredField("mRecyclerView")
@@ -56,7 +57,7 @@ class ArticleListLinearLayoutManager : LinearLayoutManager {
          } catch (e: Exception) {
              e.printStackTrace()
              null
-         }*/
+         }
 
 
     override fun onRestoreInstanceState(state: Parcelable?) {
@@ -76,14 +77,17 @@ class ArticleListLinearLayoutManager : LinearLayoutManager {
         bannerView?.run {
             if (mPendingVpPosition != RecyclerView.NO_POSITION) {
                 currentItem = mPendingVpPosition
+                mPendingVpPosition = RecyclerView.NO_POSITION
             }
         }
-        mPendingVpPosition = RecyclerView.NO_POSITION
     }
 
 
     private fun findHeaderView(): View? {
-        val view = findViewByPosition(0)
+        val recyclerView = getRecylerView()
+
+        val view = (recyclerView?.adapter as? BaseQuickAdapter<*,*>)?.headerLayout
+
         return if (view?.id ?: View.NO_ID == R.id.rv_header_id) {
             view
         } else {

@@ -136,7 +136,7 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
                 Status.SUCCESS, Status.ERROR -> {
                     hideLoadingDialog()
                     (bannerAdapter.realAdapter as BannerAdapter).setDatas(it.data)
-                    bannerAdapter.realAdapter.notifyDataSetChanged()
+                    bannerAdapter.notifyDataSetChanged()
                 }
                 else -> Unit
             }
