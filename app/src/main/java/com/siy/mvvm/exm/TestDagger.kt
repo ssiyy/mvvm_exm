@@ -3,36 +3,68 @@ package com.siy.mvvm.exm
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import dagger.Subcomponent
 import javax.inject.Inject
 
 
 /**
+ * 用来测试Dagger2
+ *
  * Created by Siy on 2019/10/11.
  *
  * @author Siy
  */
-class Student{
-    internal val name: String = "张三"
+
+class Father {
+    val name = "老王"
 }
 
-class ClassRoom {
-    init {
-        DaggerClassRoomComponent.create().inject(this)
-    }
+@Module(subcomponents = [SonComponent::class])
+class FatherModule {
+    @Provides
+    fun providerFather() = Father()
+}
 
-    @Inject
-    lateinit var student: Student
+@Component(modules = [FatherModule::class])
+interface FatherComponent {
+    fun buildChildComponent(): SonComponent.Builder
+}
 
-    fun printName() = println(student.name)
+class Son(private val father: Father) {
+    val fatherName: String
+        get() = father.name
+
 }
 
 @Module
-class ClassRoomModule {
+class SonModule {
     @Provides
-    fun provideStudent() = Student()
+    fun providerSon(father: Father) = Son(father)
 }
 
-@Component(modules = [ClassRoomModule::class])
-interface ClassRoomComponent {
-    fun inject(room: ClassRoom)
+@Subcomponent(modules = [SonModule::class])
+interface SonComponent {
+    fun inject(runner: Runner)
+
+    @Subcomponent.Builder
+    interface Builder {
+        fun build(): SonComponent
+    }
+}
+
+class Runner {
+    init {
+       DaggerFatherComponent.create().buildChildComponent().build().inject(this)
+    }
+
+    @Inject
+    lateinit var son: Son
+
+    fun runner() {
+        println(son.fatherName)
+    }
+}
+
+fun main() {
+    Runner().runner()
 }

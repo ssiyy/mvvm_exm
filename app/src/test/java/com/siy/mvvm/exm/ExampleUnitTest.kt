@@ -8,9 +8,5 @@ import org.junit.Test
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
-    @Test
-    fun testDagger2() {
-        val classRoom = ClassRoom()
-        classRoom.printName()
-    }
+
 }
