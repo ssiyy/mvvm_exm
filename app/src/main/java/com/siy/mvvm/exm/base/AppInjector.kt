@@ -18,6 +18,7 @@ package com.siy.mvvm.exm.base
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -74,7 +75,11 @@ object AppInjector {
             activity.supportFragmentManager
                     .registerFragmentLifecycleCallbacks(
                             object : FragmentManager.FragmentLifecycleCallbacks() {
-                                override fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
+                                override fun onFragmentAttached(
+                                    fm: FragmentManager,
+                                    f: Fragment,
+                                    context: Context
+                                ) {
                                     if (f is Injectable) {
                                         AndroidSupportInjection.inject(f)
                                     }
