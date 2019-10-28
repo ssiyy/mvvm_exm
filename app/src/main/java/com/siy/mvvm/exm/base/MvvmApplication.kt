@@ -18,12 +18,12 @@ import kotlin.properties.Delegates
  *
  * @author Siy
  */
-class GbdApplication : Application(), HasActivityInjector {
+class MvvmApplication : Application(), HasActivityInjector {
 
     companion object {
-        private var mInstance: GbdApplication by Delegates.notNull()
+        private var mInstance: MvvmApplication by Delegates.notNull()
 
-        val instance: GbdApplication
+        val instance: MvvmApplication
             get() = mInstance
     }
 

@@ -2,7 +2,7 @@ package com.siy.mvvm.exm.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.siy.mvvm.exm.base.GbdApplication
+import com.siy.mvvm.exm.base.MvvmApplication
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
@@ -51,9 +51,9 @@ class Preference<T>(
     private val prefs: FileWriterReader by lazy {
         Timber.d(prefName)
         if (mode == MODE.STROGE_SP) {
-            SpFileWriterReader(GbdApplication.instance.getSharedPreferences(prefName, Context.MODE_PRIVATE))
+            SpFileWriterReader(MvvmApplication.instance.getSharedPreferences(prefName, Context.MODE_PRIVATE))
         } else {
-            val file = File(GbdApplication.instance.exCacheDir, "crashlog")
+            val file = File(MvvmApplication.instance.exCacheDir, "crashlog")
             if (!file.exists()) {
                 file.mkdir()
             }

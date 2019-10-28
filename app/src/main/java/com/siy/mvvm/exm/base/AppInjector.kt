@@ -32,7 +32,7 @@ import timber.log.Timber
  * Helper class to automatically inject fragments if they implement [Injectable].
  */
 object AppInjector {
-    fun init(gbdApplication: GbdApplication) {
+    fun init(gbdApplication: MvvmApplication) {
         DaggerAppCompoent.builder().application(gbdApplication).build().inject(gbdApplication)
         gbdApplication
                 .registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {

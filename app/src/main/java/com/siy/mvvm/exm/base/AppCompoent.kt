@@ -20,12 +20,12 @@ import javax.inject.Singleton
         AppModule::class
     ]
 )
-interface AppCompoent : AndroidInjector<GbdApplication> {
+interface AppCompoent : AndroidInjector<MvvmApplication> {
 
     @Component.Builder
     interface Builder {
         @BindsInstance
-        fun application(application: GbdApplication): Builder
+        fun application(application: MvvmApplication): Builder
 
         fun build(): AppCompoent
     }

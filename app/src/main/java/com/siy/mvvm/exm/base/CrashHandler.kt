@@ -39,9 +39,9 @@ object CrashHandler : Thread.UncaughtExceptionHandler {
     }
 
     private fun killAllProcess() {
-        val actManager = GbdApplication.instance.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val actManager = MvvmApplication.instance.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         for (info in actManager.runningAppProcesses) {
-            if (info.processName.startsWith(GbdApplication.instance.packageName)) {
+            if (info.processName.startsWith(MvvmApplication.instance.packageName)) {
                 Process.killProcess(info.pid)
             }
         }
@@ -54,7 +54,7 @@ object CrashHandler : Thread.UncaughtExceptionHandler {
         }
         thread {
             Looper.prepare()
-            Toast.makeText(GbdApplication.instance, "对不起，程序异常崩溃", Toast.LENGTH_SHORT).show()
+            Toast.makeText(MvvmApplication.instance, "对不起，程序异常崩溃", Toast.LENGTH_SHORT).show()
             Looper.loop()
         }
         saveException(ex)

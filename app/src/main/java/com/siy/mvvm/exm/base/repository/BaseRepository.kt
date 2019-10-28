@@ -1,7 +1,7 @@
 package com.siy.mvvm.exm.base.repository
 
 import androidx.lifecycle.*
-import com.siy.mvvm.exm.base.GbdApplication
+import com.siy.mvvm.exm.base.MvvmApplication
 import com.siy.mvvm.exm.http.*
 import com.siy.mvvm.exm.utils.detailMsg
 import com.siy.mvvm.exm.utils.netAvailable
@@ -21,9 +21,11 @@ abstract class BaseRepository {
     /**
      * 网络连接是否可用
      */
-    protected fun isNetAvailable(): Boolean {
-        return GbdApplication.instance.netAvailable
-    }
+    /**
+     * 网络连接是否可用
+     */
+    protected val isNetAvailable: Boolean
+        get() = MvvmApplication.instance.netAvailable
 
     /**
      * 用这个请求返回的数据，不会保存在数据库
@@ -51,7 +53,7 @@ abstract class BaseRepository {
     ) = liveData(Dispatchers.IO) {
         emit(Resource.loading(null))
         try {
-            if (isNetAvailable()) {
+            if (isNetAvailable) {
                 val result = fetchNet()
                 val needResult = net2NeedResultTypeConvert(result)
                 if (isBusinessSuccess(result)) {
@@ -123,7 +125,7 @@ abstract class BaseRepository {
         result.addSource(dbSource) { db ->
             result.removeSource(dbSource)
             if (shouldFetch(db)) {
-                if (isNetAvailable()) {
+                if (isNetAvailable) {
                     result.addSource(liveData {
                         try {
                             emit(fetchNet())

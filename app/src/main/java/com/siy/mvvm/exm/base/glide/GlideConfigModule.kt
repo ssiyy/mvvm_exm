@@ -8,12 +8,10 @@ import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader
 import com.bumptech.glide.load.engine.bitmap_recycle.LruBitmapPool
 import com.bumptech.glide.load.engine.cache.DiskLruCacheFactory
-import com.bumptech.glide.load.engine.cache.ExternalCacheDiskCacheFactory
-import com.bumptech.glide.load.engine.cache.ExternalPreferredCacheDiskCacheFactory
 import com.bumptech.glide.load.engine.cache.LruResourceCache
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.module.AppGlideModule
-import com.siy.mvvm.exm.base.GbdApplication
+import com.siy.mvvm.exm.base.MvvmApplication
 import com.siy.mvvm.exm.utils.exCacheDir
 import java.io.File
 import java.io.InputStream
@@ -28,7 +26,7 @@ class GlideConfigModule : AppGlideModule() {
     }
 
     override fun applyOptions(context: Context, builder: GlideBuilder) {
-        builder.setDiskCache(DiskLruCacheFactory(DiskLruCacheFactory.CacheDirectoryGetter { File(GbdApplication.instance.exCacheDir, "glide") }, diskCacheSizeBytes))
+        builder.setDiskCache(DiskLruCacheFactory(DiskLruCacheFactory.CacheDirectoryGetter { File(MvvmApplication.instance.exCacheDir, "glide") }, diskCacheSizeBytes))
         builder.setMemoryCache(LruResourceCache(memoryCacheSizeBytes))
         builder.setBitmapPool(LruBitmapPool(bitmapPoolSizeBytes))
     }
