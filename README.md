@@ -138,9 +138,9 @@ Google Issue Tracker有2个相关的Issue:
  
 那么这个问题真的没有解决方案么？最终我在[Ian Lake(Android Toolkit Developer and Runner)](https://twitter.com/ianhlake/)的twitter下面找到了答案。关于这个问题的Twitter原文地址：https://twitter.com/ianhlake/status/1103522856535638016
  
-```java
-您不必每次调用onCreateView时都为新视图inflater-您可以保留对您第一次创建的View的引用，然后再次返回它。请记住，即使不缓存视图本身，Fragment视图也会自动保存和恢复其状态。如果不是这种情况，则应首先解决该问题（确保视图具有android：id等）
-```
+|您不必每次调用onCreateView时都为新视图inflater-您可以保留对您第一次创建的View的引用，然后再次返回它。请记住，即使不缓存视图本身，Fragment视图也会自动保存和恢复其状态。如果不是这种情况，则应首先解决该问题（确保视图具有android：id等）|
+|:-: | 
+
 为什么要确保视图有id才能自动缓存视图？答案[看这里](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0512/2870.html)
 ## 数据管理
 ![data](https://developer.android.google.cn/topic/libraries/architecture/images/network-bound-resource.png)
