@@ -24,7 +24,7 @@ abstract class BaseRepository {
     /**
      * 网络连接是否可用
      */
-    protected val isNetAvailable: Boolean
+    private val isNetAvailable: Boolean
         get() = MvvmApplication.instance.netAvailable
 
     /**

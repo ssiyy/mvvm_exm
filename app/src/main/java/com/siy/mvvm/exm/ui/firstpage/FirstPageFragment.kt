@@ -28,7 +28,6 @@ import com.siy.mvvm.exm.utils.inflater
 import com.siy.mvvm.exm.utils.setupRefreshLayout
 import com.siy.mvvm.exm.utils.throttleFist
 import com.siy.mvvm.exm.views.header.CommonHeader
-import com.siy.mvvm.exm.views.loopingviewpager.LoopPagerAdapterWrapper
 import com.siy.mvvm.exm.views.loopingviewpager.LoopViewPager
 import com.siy.mvvm.exm.views.search.AutoSearch
 import kotlinx.coroutines.CoroutineScope
@@ -45,15 +44,15 @@ import javax.inject.Singleton
  *
  * 关于Navigation切换界面调用onDestroyView()和onCreateView()状态保留问题
  * Ian Lake：
- * 您不必每次调用onCreateView时都为新视图inflater-您可以保留对您第一次创建的View的引用，然后再次返回它。当然，对于不可见的内容，这会不断浪费内存和资源。
+ * 您不必每次调用onCreateView时都为新视图inflater-您可以保留对您第一次创建的View的引用，然后再次返回它。当然，对于不可见的内容，这会不断浪费内存和资源。保持数据>>您的视图
  *
  *  关于保留视图的引用，内存泄露问题：
  *  Ian Lake：
  *  确保您没有将setRetainInstance(true)与带有Views的Fragments一起使用，或者不在ViewModel中存储任何引用context的Views和things
- *  由于视图引用了旧的上下文，因此视图将永远无法幸免于配置更改驱动的活动。
+ *  由于视图引用了旧的上下文，因此视图将永远无法幸免于configuration更改驱动的Activity 重启。
  *
  *  Ian Lake Tips:
- *  请记住，即使不缓存视图本身，“片段”视图也会自动保存和恢复其状态。如果不是这种情况，则应首先解决该问题（确保视图具有android：id等）。否则，保留片段中的视图不是泄漏。
+ *  请记住，即使不缓存视图本身，Fragment视图也会自动保存和恢复其状态。如果不是这种情况，则应首先解决该问题（确保视图具有android：id等）。否则，保留片段中的视图不是泄漏。
  *
  *
  * @see <a href="https://issuetracker.google.com/issues/109856764">Issue Tracker -  Transaction type is not available with Navigation Architecture Component</a>
