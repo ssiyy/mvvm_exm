@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:bind="http://schemas.android.com/apk/res-auto">
-    <data>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
-    </data>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f6f6f6">
 
-    <LinearLayout
+        <com.siy.mvvm.exm.views.CommonViewPager
+            android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#f6f6f6"
-            android:orientation="vertical">
-
-        <com.siy.mvvm.exm.views.CommonViewPager
-                android:id="@+id/view_pager"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="#f6f6f6"
-                bind:canScroll="@{false}" />
+            bind:canScroll="@{false}" />
 
         <com.siy.mvvm.exm.views.MainIndicator
-                android:id="@+id/main_indicator"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-    </LinearLayout>
+            android:id="@+id/main_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" />
+    </RelativeLayout>
 </layout>

@@ -1,4 +1,4 @@
-package com.siy.mvvm.exm.ui.main.realis
+package com.siy.mvvm.exm.ui.forResult
 
 import android.os.Bundle
 import android.view.View
@@ -15,7 +15,7 @@ import com.siy.mvvm.exm.utils.NavigationResult
  *
  * @author Siy
  */
-class ToRealisFragment(override val layoutId: Int = R.layout.fragment_to_result) :
+class ToResultFragment(override val layoutId: Int = R.layout.fragment_to_result) :
     BaseFragment<FragmentToResultBinding>(), NavigationResult {
 
     private var result = MutableLiveData<String>()
@@ -25,7 +25,7 @@ class ToRealisFragment(override val layoutId: Int = R.layout.fragment_to_result)
             binding.result = result
 
             binding.click0 = fun(){
-                navController.navigateAnimate(ToRealisFragmentDirections.actionToRealisFragmentToForResultFragment().setLabel("请输入返回字符："))
+                navController.navigateAnimate(ToResultFragmentDirections.actionToResultFragmentToForResultFragment().setLabel("请输入返回字符："))
             }
 
         }

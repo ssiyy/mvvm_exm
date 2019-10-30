@@ -1,4 +1,4 @@
-package com.siy.mvvm.exm.ui.rorresult
+package com.siy.mvvm.exm.ui.forResult
 
 import android.view.View
 import androidx.core.os.bundleOf

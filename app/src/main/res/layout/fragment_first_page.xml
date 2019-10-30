@@ -3,11 +3,11 @@
 
     <data>
 
-        <import type="com.siy.mvvm.exm.ui.main.realis.RealisFragment" />
+        <import type="com.siy.mvvm.exm.ui.main.FirstPageFragment" />
 
         <variable
             name="hostFrg"
-            type="RealisFragment" />
+            type="com.siy.mvvm.exm.ui.main.FirstPageFragment" />
 
     </data>
 

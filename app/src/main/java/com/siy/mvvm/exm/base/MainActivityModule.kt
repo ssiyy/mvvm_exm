@@ -1,6 +1,6 @@
 package com.siy.mvvm.exm.base
 
-import com.siy.mvvm.exm.MainActivity
+import com.siy.mvvm.exm.ui.MainActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

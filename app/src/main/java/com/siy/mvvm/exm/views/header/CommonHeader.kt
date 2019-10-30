@@ -25,7 +25,7 @@ abstract class CommonHeader {
     var showTitle = MutableLiveData(true)
 
     var titleIcon = MutableLiveData(R.drawable.common_question)
-    var showTitleIcon = MutableLiveData(true)
+    var showTitleIcon = MutableLiveData(false)
 
     var rightIcon = MutableLiveData(R.drawable.real_write)
     var rightIconDrawable = MutableLiveData<Drawable>()

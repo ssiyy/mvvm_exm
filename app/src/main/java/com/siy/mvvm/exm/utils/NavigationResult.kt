@@ -2,7 +2,7 @@ package com.siy.mvvm.exm.utils
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.siy.mvvm.exm.MainActivity
+import com.siy.mvvm.exm.ui.MainActivity
 
 
 /**

@@ -1,4 +1,4 @@
-package com.siy.mvvm.exm
+package com.siy.mvvm.exm.ui
 
 import android.content.Context
 import android.content.res.Configuration
@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.Navigation
+import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.utils.NavigationResult
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
@@ -69,7 +70,9 @@ class MainActivity : AppCompatActivity(), HasSupportFragmentInjector {
         navController().popBackStack()
     }
 
-    private fun navController() = Navigation.findNavController(this, R.id.nav_host_fragment)
+    private fun navController() = Navigation.findNavController(this,
+        R.id.nav_host_fragment
+    )
 
     private fun isShouldHideInput(v: View?, event: MotionEvent?) =
         if (v is EditText && event != null) {

@@ -54,7 +54,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
-                        android:text="首页"
+                        android:text="A1"
                         android:textColor="@drawable/main_tab_txt_color_selector"
                         android:textSize="9sp"
                         bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG1_CODE) !=0}" />
@@ -107,7 +107,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
-                        android:text="履职"
+                        android:text="首页"
                         android:textColor="@drawable/main_tab_txt_color_selector"
                         android:textSize="9sp"
                         bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG2_CODE) !=0}" />
@@ -154,12 +154,12 @@
                     android:layout_width="55dp"
                     android:layout_height="55dp"
                     android:layout_marginBottom="10dp"
-                    android:src="@drawable/fast_realism" />
+                    android:src="@drawable/c" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="快速写实"
+                    android:text="大鱼海棠"
                     android:textColor="@drawable/main_tab_txt_color_selector"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -198,7 +198,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
-                        android:text="查询"
+                        android:text="A2"
                         android:textColor="@drawable/main_tab_txt_color_selector"
                         android:textSize="9sp"
                         bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG4_CODE) !=0}" />
@@ -251,7 +251,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="3dp"
-                        android:text="我的"
+                        android:text="A3"
                         android:textColor="@drawable/main_tab_txt_color_selector"
                         android:textSize="9sp"
                         bind:selected="@{(mainIndicator.stateVg &amp; MainIndicator.VG5_CODE) !=0}" />

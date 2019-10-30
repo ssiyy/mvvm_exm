@@ -1,4 +1,4 @@
-package com.siy.mvvm.exm.ui.firstpage
+package com.siy.mvvm.exm.ui.article
 
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +16,7 @@ import com.siy.mvvm.exm.base.glide.GlideApp
 import com.siy.mvvm.exm.base.repository.BaseRepository
 import com.siy.mvvm.exm.base.ui.BaseFragment
 import com.siy.mvvm.exm.base.ui.navigateAnimate
-import com.siy.mvvm.exm.databinding.FragmentFirstpageLayoutBinding
+import com.siy.mvvm.exm.databinding.FragmentArticleListBinding
 import com.siy.mvvm.exm.db.dao.ArticleDao
 import com.siy.mvvm.exm.db.dao.BannerDao
 import com.siy.mvvm.exm.http.GbdService
@@ -62,8 +62,8 @@ import javax.inject.Singleton
  *
  * @author Siy
  */
-class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage_layout) :
-        BaseFragment<FragmentFirstpageLayoutBinding>(), Injectable {
+class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article_list) :
+        BaseFragment<FragmentArticleListBinding>(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -115,7 +115,7 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
                                 val item = artAdapter.getItem(postion)
                                 item?.let {
                                     navController.navigateAnimate(
-                                            FirstPageFragmentDirections.actionFirstPageFragmentToWebViewFragment(
+                                            ArticleListFragmentDirections.actionFirstPageFragmentToWebViewFragment(
                                                     it.link
                                             )
                                     )
@@ -200,7 +200,7 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_firstpage
                         .throttleFist(1000)
                         .onEach {
                             view1.findNavController().navigateAnimate(
-                                    FirstPageFragmentDirections.actionFirstPageFragmentToWebViewFragment(
+                                ArticleListFragmentDirections.actionFirstPageFragmentToWebViewFragment(
                                             banner.url
                                     )
                             )

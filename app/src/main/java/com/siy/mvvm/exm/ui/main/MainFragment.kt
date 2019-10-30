@@ -6,10 +6,6 @@ import androidx.fragment.app.FragmentPagerAdapter
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.base.ui.BaseFragment
 import com.siy.mvvm.exm.databinding.FragmentMainBinding
-import com.siy.mvvm.exm.ui.main.me.MyFragment
-import com.siy.mvvm.exm.ui.main.message.MessageFragment
-import com.siy.mvvm.exm.ui.main.realis.RealisFragment
-import com.siy.mvvm.exm.ui.main.search.SearchFragment
 import com.siy.mvvm.exm.utils.GDB_ERROR
 import com.siy.mvvm.exm.utils.autoDisposable
 import com.siy.mvvm.exm.utils.showToast
@@ -57,7 +53,10 @@ class MainFragment(
 
     private fun initPages() {
         val fragments =
-            listOf<Fragment>(MessageFragment(), RealisFragment(), SearchFragment(), MyFragment())
+            listOf<Fragment>(
+                A1Fragment(), FirstPageFragment(),
+                A2Fragment(), A3Fragment()
+            )
         val adapter = object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int) = fragments[position]
 

@@ -1,4 +1,4 @@
-package com.siy.mvvm.exm.ui.firstpage
+package com.siy.mvvm.exm.ui.article
 
 import android.content.Context
 import android.os.Bundle

@@ -31,26 +31,25 @@
         android:name="com.siy.mvvm.exm.ui.main.MainFragment"
         android:label="MainFragment"
         tools:layout="@layout/fragment_main">
-
         <action
-            android:id="@+id/action_mainFragment_to_firstPageFragment"
-            app:destination="@id/firstPageFragment" />
+            android:id="@+id/action_mainFragment_to_toResultFragment"
+            app:destination="@id/toResultFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_toRealisFragment"
-            app:destination="@id/toRealisFragment" />
+            android:id="@+id/action_mainFragment_to_articleListFragment"
+            app:destination="@id/articleListFragment" />
     </fragment>
     <fragment
-        android:id="@+id/firstPageFragment"
-        android:name="com.siy.mvvm.exm.ui.firstpage.FirstPageFragment"
+        android:id="@+id/articleListFragment"
+        android:name="com.siy.mvvm.exm.ui.article.ArticleListFragment"
         android:label="FirstPageFragment"
-        tools:layout="@layout/fragment_firstpage_layout">
+        tools:layout="@layout/fragment_article_list">
         <action
             android:id="@+id/action_firstPageFragment_to_webViewFragment"
             app:destination="@id/webViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/forResultFragment"
-        android:name="com.siy.mvvm.exm.ui.rorresult.ForResultFragment"
+        android:name="com.siy.mvvm.exm.ui.forResult.ForResultFragment"
         android:label="ForResultFragment"
         tools:layout="@layout/fragment_for_result">
         <argument
@@ -59,12 +58,12 @@
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/toRealisFragment"
-        android:name="com.siy.mvvm.exm.ui.main.realis.ToRealisFragment"
-        android:label="ToRealisFragment"
+        android:id="@+id/toResultFragment"
+        android:name="com.siy.mvvm.exm.ui.forResult.ToResultFragment"
+        android:label="ToResultFragment"
         tools:layout="@layout/fragment_to_result">
         <action
-            android:id="@+id/action_toRealisFragment_to_forResultFragment"
+            android:id="@+id/action_toResultFragment_to_forResultFragment"
             app:destination="@id/forResultFragment" />
     </fragment>
     <fragment

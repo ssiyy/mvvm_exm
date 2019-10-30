@@ -81,7 +81,7 @@
                 android:loadMoreEnable="@{true}"
                 android:onItemClick="@{(a,b,c)->click1s.onItemClick.invoke(c)}"
                 android:onLoadMore="@{()->click0s.onLoadMore.invoke()}"
-                bind:layoutManager="com.siy.mvvm.exm.ui.firstpage.ArticleListLinearLayoutManager"
+                bind:layoutManager="com.siy.mvvm.exm.ui.article.ArticleListLinearLayoutManager"
                 tools:listitem="@layout/item_article" />
         </com.siy.mvvm.exm.views.ScrollChildSwipeRefreshLayout>
     </LinearLayout>
