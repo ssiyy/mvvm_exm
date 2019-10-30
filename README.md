@@ -102,9 +102,9 @@ id:弹出目的地，清除所有中间目的地。
 inclusive:如果为true，也会从后堆栈中弹出给定的目标,false不会
 ## startActivityForResult用Navigation怎么实现
 你在文档和官方demo中都找不到相关的内容，但是可以找到这么一句话
-```java
-通常，强烈建议您仅在目标之间传递最少的数据量。例如，您应该传递键来检索对象而不是传递对象本身，因为所有保存状态的总空间在Android上受到限制。如果需要传递大量数据，请考虑使用ViewModel，如在Fragments之间共享数据中所述。
-```
+
+>> 通常，强烈建议您仅在目标之间传递最少的数据量。例如，您应该传递键来检索对象而不是传递对象本身，因为所有保存状态的总空间在Android上受到限制。如果需要传递大量数据，请考虑使用ViewModel，如在Fragments之间共享数据中所述。
+
 Navigation推荐使用ViewModel在Fragment之间共享数据，这种方式在startActivityForResult并不友好。因此Google Issue Tracker有这么一个Issue：Navigation: startActivityForResult analog，但是它的优先级并不高。所以在官方给出解决方案之前我这有一种解决方式。
 ##### 1、定义一个这样的接口
 ```java
@@ -140,15 +140,6 @@ Google Issue Tracker有2个相关的Issue:
  
 您不必每次调用onCreateView时都为新视图inflater-您可以保留对您第一次创建的View的引用，然后再次返回它。请记住，即使不缓存视图本身，Fragment视图也会自动保存和恢复其状态。如果不是这种情况，则应首先解决该问题（确保视图具有android：id等|
 |:-| 
-
-a|b|c
-
-
-:-|:-:|-:
-
-1|2|3
-
-
 为什么要确保视图有id才能自动缓存视图？答案[看这里](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0512/2870.html)
 ## 数据管理
 ![data](https://developer.android.google.cn/topic/libraries/architecture/images/network-bound-resource.png)
