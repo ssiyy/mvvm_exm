@@ -18,7 +18,7 @@ import com.siy.mvvm.exm.ui.Banner
         Banner::class,
         Article::class], version = 1
 )
-abstract class GbdDb : RoomDatabase() {
+abstract class MvvmDb : RoomDatabase() {
 
     abstract fun bannerDao(): BannerDao
     abstract fun articleDao(): ArticleDao

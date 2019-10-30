@@ -10,7 +10,7 @@ import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.siy.mvvm.exm.R
-import com.siy.mvvm.exm.base.GbdDb
+import com.siy.mvvm.exm.base.MvvmDb
 import com.siy.mvvm.exm.base.Injectable
 import com.siy.mvvm.exm.base.glide.GlideApp
 import com.siy.mvvm.exm.base.repository.BaseRepository
@@ -297,7 +297,7 @@ class FirstPageRep @Inject constructor(
         private val service: GbdService,
         private val bannerDao: BannerDao,
         private val articleDao: ArticleDao,
-        private val db: GbdDb
+        private val db: MvvmDb
 
 ) : BaseRepository() {
 

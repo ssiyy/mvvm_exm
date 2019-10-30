@@ -3,7 +3,7 @@ package com.siy.mvvm.exm.db
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.siy.mvvm.exm.base.MvvmApplication
-import com.siy.mvvm.exm.base.GbdDb
+import com.siy.mvvm.exm.base.MvvmDb
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -18,9 +18,9 @@ import javax.inject.Singleton
 class DbModule {
     @Singleton
     @Provides
-    fun provideDb(application: MvvmApplication): GbdDb {
+    fun provideDb(application: MvvmApplication): MvvmDb {
         return Room
-            .databaseBuilder(application, GbdDb::class.java, "mvvm.db")
+            .databaseBuilder(application, MvvmDb::class.java, "mvvm.db")
             .fallbackToDestructiveMigration()
             .allowMainThreadQueries()
             .setJournalMode(RoomDatabase.JournalMode.AUTOMATIC)
@@ -29,10 +29,10 @@ class DbModule {
 
     @Singleton
     @Provides
-    fun bannerDao(db: GbdDb) = db.bannerDao()
+    fun bannerDao(db: MvvmDb) = db.bannerDao()
 
     @Singleton
     @Provides
-    fun articleDao(db: GbdDb) = db.articleDao()
+    fun articleDao(db: MvvmDb) = db.articleDao()
 
 }
