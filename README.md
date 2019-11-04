@@ -45,7 +45,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
     .....
 }
 ```
-### 方法一：popUpToInclusive
+### 方法二：popUpToInclusive
 ```java
  <fragment
         android:id="@+id/splashFragment"
@@ -105,7 +105,7 @@ inclusive:如果为true，也会从后堆栈中弹出给定的目标,false不会
 
 > 通常，强烈建议您仅在目标之间传递最少的数据量。例如，您应该传递键来检索对象而不是传递对象本身，因为所有保存状态的总空间在Android上受到限制。如果需要传递大量数据，请考虑使用ViewModel，如在Fragments之间共享数据中所述。
 
-Navigation推荐使用ViewModel在Fragment之间共享数据，这种方式在startActivityForResult并不友好。因此Google Issue Tracker有这么一个Issue：Navigation: startActivityForResult analog，但是它的优先级并不高。所以在官方给出解决方案之前我这有一种解决方式。
+Navigation推荐使用ViewModel在Fragment之间共享数据，这种方式在startActivityForResult并不友好。因此Google Issue Tracker有这么一个Issue：[Navigation: startActivityForResult analog](https://issuetracker.google.com/issues/79672220)，但是它的优先级并不高。所以在官方给出解决方案之前我这有一种解决方式。
 ##### 1、定义一个这样的接口
 ```java
 interface NavigationResult {
@@ -145,5 +145,9 @@ Google Issue Tracker有2个相关的Issue:
 ![data](https://developer.android.google.cn/topic/libraries/architecture/images/network-bound-resource.png)
 
 Kotlin协程的实现上面的逻辑[BaseRepository.kt](https://github.com/Siy-Wu/mvvm_exm/blob/master/app/src/main/java/com/siy/mvvm/exm/base/repository/BaseRepository.kt)
+
+为什么要用协程实现这个呢？因为Room 和 retrofit2-2.6.0都支持协程的支持用起来很方便
+
+还有一个优点：liveData构建块用作协程和LiveData之间的结构化并发原语。当LiveData变为活动状态时，该代码块开始执行；当LiveData变为非活动状态时，该代码块在可配置的超时后自动取消。如果在完成之前将其取消，则如果LiveData再次变为活动状态，它将重新启动。如果它在先前的运行中成功完成，则不会重新启动。请注意，只有自动取消后，它才会重新启动。如果由于任何其他原因取消了该块(例如，引发CancelationException)，则不会重新启动它。
 
 详细内容可以查看这边文章：https://blog.csdn.net/baidu_34012226/article/details/102458177
