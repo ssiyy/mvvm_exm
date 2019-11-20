@@ -6,6 +6,7 @@ package com.siy.mvvm.exm.utils
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
@@ -13,6 +14,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.renderscript.Allocation
@@ -428,3 +430,121 @@ val Context.exCacheDir: File
 
 val View.inflater: LayoutInflater
     get() = LayoutInflater.from(context)
+
+/**
+ * 小米应用商店
+ */
+private const val MARKET_PKG_NAME_MI = "com.xiaomi.market"
+
+/**
+ * 360商店
+ */
+private const val MARKET_PKG_NAME_360 = "com.qihoo.appstore"
+/**
+ * vivo商店
+ */
+private const val MARKET_PKG_NAME_VIVO = "com.bbk.appstore"
+
+/**
+ * oppo商店
+ */
+private const val MARKET_PKG_NAME_OPPO = "com.oppo.market"
+
+/**
+ * 应用宝
+ */
+private const val MARKET_PKG_NAME_YINGYONGBAO = "com.tencent.android.qqdownloader"
+
+/**
+ *安智
+ */
+private const val MARKET_PKG_NAME_ANZHI = "cn.goapk.market"
+
+/**
+ * 华为
+ */
+private const val MARKET_PKG_NAME_HUAWEI = "com.huawei.appmarket"
+
+/**
+ * 百度
+ */
+private const val MARKET_PKG_NAME_BAIDU = "com.baidu.appsearch"
+
+/**
+ *历趣
+ */
+private const val MARKET_PKG_NAME_LIQU = "com.liqucn.android"
+
+/**
+ * 搜狗
+ */
+private const val MARKET_PKG_NAME_SOUGOU = "com.sougou.androidtool"
+
+/**
+ * 魅族
+ */
+private const val MARKET_PKG_NAME_MEIZU = "com.meizu.mstore"
+
+
+/**
+ * 跳转到渠道对应的市场，如果没有该市场，就跳转到应用宝（App或者网页版）
+ */
+fun Context.goToAppMarket() {
+    try {
+//        val uri = Uri.parse("market://details?id=$packageName")
+        val uri = Uri.parse("market://details?id=" + "com.tencent.mm")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val resInfo = packageManager.queryIntentActivities(intent, 0)
+
+        val pkgName = when ("yingyongbao") {
+            "normal" -> MARKET_PKG_NAME_YINGYONGBAO
+            "baidu" -> MARKET_PKG_NAME_BAIDU
+            "huawei" -> MARKET_PKG_NAME_HUAWEI
+            "oppo" -> MARKET_PKG_NAME_OPPO
+            "qihu360" -> MARKET_PKG_NAME_360
+            "vivo" -> MARKET_PKG_NAME_VIVO
+            "xiaomi" -> MARKET_PKG_NAME_MI
+            "yingyongbao" -> MARKET_PKG_NAME_YINGYONGBAO
+            "anzi" -> MARKET_PKG_NAME_ANZHI
+            "liqu" -> MARKET_PKG_NAME_LIQU
+            "sougou" -> MARKET_PKG_NAME_SOUGOU
+            "meizu" -> MARKET_PKG_NAME_MEIZU
+            else -> MARKET_PKG_NAME_YINGYONGBAO
+        }
+
+        // 筛选指定包名的市场intent
+        if (resInfo.size > 0) {
+            for (i in resInfo.indices) {
+                val resolveInfo = resInfo[i]
+                val packageName = resolveInfo.activityInfo.packageName
+                if (packageName.toLowerCase() == pkgName) {
+                    intent.component = ComponentName(packageName, resolveInfo.activityInfo.name)
+                    startActivity(intent)
+                    return
+                }
+            }
+        }
+        // 未匹配到，跳转到应用宝网页版
+        goToYingYongBaoWeb()
+    } catch (e: Exception) {
+        // 发生异常，跳转到应用宝网页版
+        goToYingYongBaoWeb()
+    }
+}
+
+/**
+ * 跳转到应用宝网页版 多客拼团页面
+ */
+fun Context.goToYingYongBaoWeb() {
+//    val url = "https://a.app.qq.com/o/simple.jsp?pkgname=$packageName"
+    val url = "https://a.app.qq.com/o/simple.jsp?pkgname=com.tencent.mm"
+    try {
+        val uri = Uri.parse(url)
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}

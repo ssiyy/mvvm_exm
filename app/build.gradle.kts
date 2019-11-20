@@ -49,13 +49,13 @@ android {
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("releaseKey")
+      //      signingConfig = signingConfigs.getByName("releaseKey")
             isZipAlignEnabled = true
         }
 
         getByName("debug") {
             applicationIdSuffix = ".debug"
-            signingConfig = signingConfigs.getByName("debugKey")
+         //   signingConfig = signingConfigs.getByName("debugKey")
             isZipAlignEnabled = true
         }
     }

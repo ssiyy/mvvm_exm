@@ -8,6 +8,7 @@ import com.siy.mvvm.exm.base.ui.BaseFragment
 import com.siy.mvvm.exm.databinding.FragmentMainBinding
 import com.siy.mvvm.exm.utils.GDB_ERROR
 import com.siy.mvvm.exm.utils.autoDisposable
+import com.siy.mvvm.exm.utils.goToAppMarket
 import com.siy.mvvm.exm.utils.showToast
 import com.siy.mvvm.exm.views.MainIndicator
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -75,6 +76,7 @@ class MainFragment(
                 MainIndicator.VG4_CODE -> vp?.currentItem = 2
                 MainIndicator.VG5_CODE -> vp?.currentItem = 3
                 MainIndicator.VG_MAIN_CODE -> {
+                    mContext.applicationContext.goToAppMarket()
                 }
             }
         }

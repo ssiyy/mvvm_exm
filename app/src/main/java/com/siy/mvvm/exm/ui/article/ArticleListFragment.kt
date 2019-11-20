@@ -10,8 +10,8 @@ import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.siy.mvvm.exm.R
-import com.siy.mvvm.exm.base.MvvmDb
 import com.siy.mvvm.exm.base.Injectable
+import com.siy.mvvm.exm.base.MvvmDb
 import com.siy.mvvm.exm.base.glide.GlideApp
 import com.siy.mvvm.exm.base.repository.BaseRepository
 import com.siy.mvvm.exm.base.ui.BaseFragment
@@ -63,7 +63,7 @@ import javax.inject.Singleton
  * @author Siy
  */
 class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article_list) :
-        BaseFragment<FragmentArticleListBinding>(), Injectable {
+    BaseFragment<FragmentArticleListBinding>(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -75,7 +75,7 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
     override fun initViewsAndEvents(view: View) {
         val headerView = LoopViewPager(context).apply {
             layoutParams =
-                    ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dip2px(200f))
+                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dip2px(200f))
             adapter = BannerAdapter(viewLifecycleOwner.lifecycleScope)
         }
 
@@ -105,22 +105,22 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
             }
 
             click0s = mapOf(
-                    "onRefresh" to viewModel::refresh,
-                    "onLoadMore" to viewModel::loadMore
+                "onRefresh" to viewModel::refresh,
+                "onLoadMore" to viewModel::loadMore
             )
 
             click1s = mapOf(
-                    "onItemClick" to
-                            fun(postion: Int) {
-                                val item = artAdapter.getItem(postion)
-                                item?.let {
-                                    navController.navigateAnimate(
-                                            ArticleListFragmentDirections.actionFirstPageFragmentToWebViewFragment(
-                                                    it.link
-                                            )
+                "onItemClick" to
+                        fun(postion: Int) {
+                            val item = artAdapter.getItem(postion)
+                            item?.let {
+                                navController.navigateAnimate(
+                                    ArticleListFragmentDirections.actionFirstPageFragmentToWebViewFragment(
+                                        it.link
                                     )
-                                }
+                                )
                             }
+                        }
             )
             adapter = artAdapter
             setupRefreshLayout(srlLayout, recyclerView)
@@ -141,7 +141,11 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
         }
 
         viewModel.articleList.observe(viewLifecycleOwner) {
-            adapter.syncSetDisffData(it)
+//            lifecycleScope.launchWhenStarted {
+                adapter.asyncSetDisffData(it,lifecycleScope)
+//            }
+
+//            adapter.rxSetDisffData(it, this)
         }
 
         viewModel.loadState.observe(viewLifecycleOwner) {
@@ -180,8 +184,8 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
     }
 
     class BannerAdapter(
-            private val scope: CoroutineScope,
-            private var banners: List<Banner>? = null
+        private val scope: CoroutineScope,
+        private var banners: List<Banner>? = null
     ) : PagerAdapter() {
 
         override fun isViewFromObject(view: View, `object`: Any) = view == `object`
@@ -197,20 +201,20 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
             val item = banners?.get(position)
             item?.let { banner ->
                 view1.clicks()
-                        .throttleFist(1000)
-                        .onEach {
-                            view1.findNavController().navigateAnimate(
-                                ArticleListFragmentDirections.actionFirstPageFragmentToWebViewFragment(
-                                            banner.url
-                                    )
+                    .throttleFist(1000)
+                    .onEach {
+                        view1.findNavController().navigateAnimate(
+                            ArticleListFragmentDirections.actionFirstPageFragmentToWebViewFragment(
+                                banner.url
                             )
-                        }.launchIn(scope)
+                        )
+                    }.launchIn(scope)
 
                 GlideApp.with(container.context)
-                        .load(banner.imagePath)
-                        .transition(DrawableTransitionOptions.withCrossFade(600))
-                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                        .into(view1)
+                    .load(banner.imagePath)
+                    .transition(DrawableTransitionOptions.withCrossFade(600))
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .into(view1)
             }
             container.addView(view)
             return view
@@ -232,7 +236,7 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
 }
 
 class FirstPageViewModel @Inject constructor(
-        rep: FirstPageRep
+    rep: FirstPageRep
 ) : ViewModel() {
     val banners = rep.getBanners()
 
@@ -294,64 +298,64 @@ class FirstPageViewModel @Inject constructor(
 
 @Singleton
 class FirstPageRep @Inject constructor(
-        private val service: GbdService,
-        private val bannerDao: BannerDao,
-        private val articleDao: ArticleDao,
-        private val db: MvvmDb
+    private val service: GbdService,
+    private val bannerDao: BannerDao,
+    private val articleDao: ArticleDao,
+    private val db: MvvmDb
 
 ) : BaseRepository() {
 
 
     fun getBanners() = loadData(
-            {
-                bannerDao.queryAll()
-            },
-            {
-                service.getBanner()
-            }, {
-        db.runInTransaction {
-            bannerDao.deleteAll()
-            it?.let { banners ->
-                bannerDao.insertAll(banners)
+        {
+            bannerDao.queryAll()
+        },
+        {
+            service.getBanner()
+        }, {
+            db.runInTransaction {
+                bannerDao.deleteAll()
+                it?.let { banners ->
+                    bannerDao.insertAll(banners)
+                }
             }
         }
-    }
     )
 
 
     fun getArtclesByPage(search: String) =
-            loadDataByPage(
-                    {
-                        articleDao.queryBySearchStr(search)
-                    },
-                    {
-                        it
-                    },
-                    {
-                        if (search.isEmpty()) {
-                            service.getHomeArticles(it!!)
-                        } else {
-                            //只做本地搜索
-                            null
-                        }
-                    },
-                    { list, isRefresh ->
-                        if (isRefresh) {
-                            articleDao.deleteAll()
-                        }
+        loadDataByPage(
+            {
+                articleDao.queryBySearchStr(search)
+            },
+            {
+                it
+            },
+            {
+                if (search.isEmpty()) {
+                    service.getHomeArticles(it!!)
+                } else {
+                    //只做本地搜索
+                    null
+                }
+            },
+            { list, isRefresh ->
+                if (isRefresh) {
+                    articleDao.deleteAll()
+                }
 
-                        if (!list.isNullOrEmpty()) {
-                            val sum = articleDao.queryDataSum()
+                if (!list.isNullOrEmpty()) {
+                    val sum = articleDao.queryDataSum()
 
-                            articleDao.insertAll(list.mapIndexed { index, article ->
-                                article._order_ = sum + index
-                                article
-                            })
-                        }
-                    },
-                    {
-                        it?.data?.datas
-                    }
-            )
+                    articleDao.insertAll(list.mapIndexed { index, article ->
+                        article._order_ = sum + index
+                        article
+                    })
+                }
+            },
+            {
+                it?.data?.datas
+            }
+        )
 
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
@@ -20,18 +21,21 @@ import com.siy.mvvm.exm.R
  * @author Siy
  */
 class ArticleListLinearLayoutManager : LinearLayoutManager {
+
+    @Suppress("unused")
     constructor(context: Context) : super(context)
 
-
+    @Suppress("unused")
     constructor(context: Context, orientation: Int, reverseLayout: Boolean) : super(
-            context,
-            orientation,
-            reverseLayout
+        context,
+        orientation,
+        reverseLayout
     )
 
+    @Suppress("unused")
     constructor(
-            context: Context, attrs: AttributeSet, defStyleAttr: Int,
-            defStyleRes: Int
+        context: Context, attrs: AttributeSet, defStyleAttr: Int,
+        defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
 
 
@@ -46,20 +50,6 @@ class ArticleListLinearLayoutManager : LinearLayoutManager {
         return bundle
     }
 
-     private fun getRecylerView() =
-         try {
-             val c = RecyclerView.LayoutManager::class.java
-             val f = c.getDeclaredField("mRecyclerView")
-             f.isAccessible = true
-             val recyclerView = f.get(this)
-             f.isAccessible = false
-             recyclerView as? RecyclerView
-         } catch (e: Exception) {
-             e.printStackTrace()
-             null
-         }
-
-
     override fun onRestoreInstanceState(state: Parcelable?) {
         if (state is Bundle) {
             mPendingVpPosition = state.getInt("pos", 0)
@@ -70,6 +60,30 @@ class ArticleListLinearLayoutManager : LinearLayoutManager {
         }
     }
 
+    override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
+        super.onLayoutChildren(recycler, state)
+
+        //下面是一些调试信息
+        Log.e(
+            "siy",
+            "saveState:${refectValue<SavedState>(
+                "mPendingSavedState",
+                LinearLayoutManager::class.java
+            )?.showMsg()}"
+        )
+        Log.e(
+            "siy",
+            "mPendingScrollPosition:${refectValue<Int>(
+                "mPendingScrollPosition",
+                LinearLayoutManager::class.java
+            )}"
+        )
+        Log.e(
+            "siy",
+            "mAnchorInfo:${refectValue<Any>("mAnchorInfo", LinearLayoutManager::class.java)}"
+        )
+
+    }
 
     override fun onLayoutCompleted(state: RecyclerView.State?) {
         super.onLayoutCompleted(state)
@@ -80,13 +94,15 @@ class ArticleListLinearLayoutManager : LinearLayoutManager {
                 mPendingVpPosition = RecyclerView.NO_POSITION
             }
         }
+        Log.e("siy", "onLayoutCompleted")
     }
 
 
     private fun findHeaderView(): View? {
-        val recyclerView = getRecylerView()
+        val recyclerView: RecyclerView? =
+            refectValue("mRecyclerView",  RecyclerView.LayoutManager::class.java)
 
-        val view = (recyclerView?.adapter as? BaseQuickAdapter<*,*>)?.headerLayout
+        val view = (recyclerView?.adapter as? BaseQuickAdapter<*, *>)?.headerLayout
 
         return if (view?.id ?: View.NO_ID == R.id.rv_header_id) {
             view
@@ -105,4 +121,25 @@ class ArticleListLinearLayoutManager : LinearLayoutManager {
         }
     }
 
+}
+
+fun LinearLayoutManager.SavedState.showMsg(): String {
+    return "SavedState{" +
+            "mAnchorPosition=${refectValue<Int>("mAnchorPosition")}, " +
+            "mAnchorOffset=${refectValue<Int>("mAnchorOffset")}, " +
+            "mAnchorLayoutFromEnd=${refectValue<Boolean>("mAnchorLayoutFromEnd")}}"
+}
+
+
+inline fun <reified T> Any.refectValue(fieldName: String, clazz: Class<*> = this::class.java): T? {
+    return try {
+        val field = clazz.getDeclaredField(fieldName)
+        field.isAccessible = true
+        val fieldValue = field.get(this)
+        field.isAccessible = false
+        fieldValue as T
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }

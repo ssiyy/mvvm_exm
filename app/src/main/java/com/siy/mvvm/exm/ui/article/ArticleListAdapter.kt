@@ -1,10 +1,18 @@
 package com.siy.mvvm.exm.ui.article
 
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.DiffUtil
+import com.chad.library.adapter.base.diff.BaseQuickAdapterListUpdateCallback
 import com.chad.library.adapter.base.diff.BaseQuickDiffCallback
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.databinding.ItemArticleBinding
 import com.siy.mvvm.exm.ui.Article
+import com.siy.mvvm.exm.utils.autoDisposable
 import com.siy.mvvm.exm.views.recylerview.databindingadapter.BaseDataBindingAdapter
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 
 /**
@@ -21,12 +29,66 @@ class ArticleListAdapter(datas: List<Article>?) :
         binding?.article = item
     }
 
-    suspend fun asyncSetDisffData(newList: List<Article>?) {
-        asyncDisffData(newList, DiffCallBack(newList, data))
+    fun asyncSetDisffData(newList: List<Article>?, lifecycleScope: LifecycleCoroutineScope) {
+        if (newList == mData) {
+            return
+        }
+
+        if (newList.isNullOrEmpty()) {
+            val countRemoved = mData.size
+            mData = null
+            val mUpdateCallback = BaseQuickAdapterListUpdateCallback(this)
+            mUpdateCallback.onRemoved(0, countRemoved)
+            return
+        }
+
+        if (mData.isNullOrEmpty()) {
+            mData = newList
+            val mUpdateCallback = BaseQuickAdapterListUpdateCallback(this)
+            mUpdateCallback.onInserted(0, newList.size)
+            return
+        }
+
+        lifecycleScope.launchWhenStarted {
+            asyncDisffData(newList, DiffCallBack(newList, data))
+        }
     }
 
-     fun syncSetDisffData(newList: List<Article>?) {
+    fun syncSetDisffData(newList: List<Article>?) {
         syncDisffData(DiffCallBack(newList, data))
+    }
+
+
+    fun rxSetDisffData(newList: List<Article>?, lifecycleOwner: LifecycleOwner) {
+        if (newList == mData) {
+            return
+        }
+
+        if (newList.isNullOrEmpty()) {
+            val countRemoved = mData.size
+            mData = null
+            val mUpdateCallback = BaseQuickAdapterListUpdateCallback(this)
+            mUpdateCallback.onRemoved(0, countRemoved)
+            return
+        }
+
+        if (mData.isNullOrEmpty()) {
+            mData = newList
+            val mUpdateCallback = BaseQuickAdapterListUpdateCallback(this)
+            mUpdateCallback.onInserted(0, newList.size)
+            return
+        }
+
+        Observable.just(newList)
+            .map {
+                DiffUtil.calculateDiff(DiffCallBack(newList, data), false)
+            }
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .`as`(lifecycleOwner.autoDisposable())
+            .subscribe {
+                setNewDiffData(it, newList ?: listOf())
+            }
     }
 
     private class DiffCallBack(newList: List<Article>?, oldList: List<Article>) :
