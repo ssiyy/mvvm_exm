@@ -141,11 +141,7 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
         }
 
         viewModel.articleList.observe(viewLifecycleOwner) {
-//            lifecycleScope.launchWhenStarted {
-                adapter.asyncSetDisffData(it,lifecycleScope)
-//            }
-
-//            adapter.rxSetDisffData(it, this)
+            adapter.asyncSetDisffData(it, lifecycleScope)
         }
 
         viewModel.loadState.observe(viewLifecycleOwner) {

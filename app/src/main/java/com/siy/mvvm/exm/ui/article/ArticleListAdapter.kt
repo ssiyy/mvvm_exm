@@ -36,7 +36,7 @@ class ArticleListAdapter(datas: List<Article>?) :
 
         if (newList.isNullOrEmpty()) {
             val countRemoved = mData.size
-            mData = null
+            mData = listOf()
             val mUpdateCallback = BaseQuickAdapterListUpdateCallback(this)
             mUpdateCallback.onRemoved(0, countRemoved)
             return
