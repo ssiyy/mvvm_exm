@@ -5,9 +5,11 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.diff.BaseQuickAdapterListUpdateCallback
 import com.chad.library.adapter.base.diff.BaseQuickDiffCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,11 +23,14 @@ import kotlinx.coroutines.withContext
 abstract class BaseDataBindingAdapter<T, B : ViewDataBinding> :
     BaseQuickAdapter<T, BaseBindingViewHolder<B>> {
 
+    var mListener: ((previousList: List<T>, currentList: List<T>) -> Unit)? = null
+
     constructor(@LayoutRes layoutRes: Int, data: List<T>?) : super(layoutRes, data)
 
+    @Suppress("unused")
     constructor(data: List<T>?) : super(data)
 
-
+    @Suppress("unused")
     constructor(@LayoutRes layoutRes: Int) : super(layoutRes)
 
     override fun createBaseViewHolder(view: View): BaseBindingViewHolder<B> {
@@ -53,11 +58,38 @@ abstract class BaseDataBindingAdapter<T, B : ViewDataBinding> :
     protected fun getViewHolderPosition(viewHolder: RecyclerView.ViewHolder) =
         viewHolder.adapterPosition - headerLayoutCount
 
-    suspend fun asyncDisffData(newData: List<T>?, diffCallBack: BaseQuickDiffCallback<T>) {
-        val result = withContext(Dispatchers.Default) {
-            DiffUtil.calculateDiff(diffCallBack, true)
+    fun asyncDisffData(
+        newData: List<T>?,
+        diffCallBack: BaseQuickDiffCallback<T>,
+        lifecycleScope: LifecycleCoroutineScope
+    ) {
+        if (newData == mData) {
+            return
         }
-        setNewDiffData(result, newData ?: listOf())
+
+        val previousList = mData
+        if (newData.isNullOrEmpty()) {
+            val countRemoved = mData.size
+            mData = listOf()
+            val mUpdateCallback = BaseQuickAdapterListUpdateCallback(this)
+            mUpdateCallback.onRemoved(0, countRemoved)
+            mListener?.invoke(previousList, listOf())
+            return
+        }
+
+        if (mData.isNullOrEmpty()) {
+            setNewData(newData)
+            mListener?.invoke(previousList, newData)
+            return
+        }
+
+        lifecycleScope.launchWhenStarted {
+            val result = withContext(Dispatchers.Default) {
+                DiffUtil.calculateDiff(diffCallBack, true)
+            }
+            setNewDiffData(result, newData)
+            mListener?.invoke(previousList, newData)
+        }
     }
 
     fun syncDisffData(diffCallBack: BaseQuickDiffCallback<T>) = setNewDiffData(diffCallBack)

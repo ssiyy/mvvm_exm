@@ -30,28 +30,7 @@ class ArticleListAdapter(datas: List<Article>?) :
     }
 
     fun asyncSetDisffData(newList: List<Article>?, lifecycleScope: LifecycleCoroutineScope) {
-        if (newList == mData) {
-            return
-        }
-
-        if (newList.isNullOrEmpty()) {
-            val countRemoved = mData.size
-            mData = listOf()
-            val mUpdateCallback = BaseQuickAdapterListUpdateCallback(this)
-            mUpdateCallback.onRemoved(0, countRemoved)
-            return
-        }
-
-        if (mData.isNullOrEmpty()) {
-            mData = newList
-            val mUpdateCallback = BaseQuickAdapterListUpdateCallback(this)
-            mUpdateCallback.onInserted(0, newList.size)
-            return
-        }
-
-        lifecycleScope.launchWhenStarted {
-            asyncDisffData(newList, DiffCallBack(newList, data))
-        }
+        asyncDisffData(newList, DiffCallBack(newList, data), lifecycleScope)
     }
 
     fun syncSetDisffData(newList: List<Article>?) {
