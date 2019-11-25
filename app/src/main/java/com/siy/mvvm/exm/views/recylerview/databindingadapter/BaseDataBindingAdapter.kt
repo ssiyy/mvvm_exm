@@ -55,7 +55,7 @@ abstract class BaseDataBindingAdapter<T, B : ViewDataBinding> :
 
     suspend fun asyncDisffData(newData: List<T>?, diffCallBack: BaseQuickDiffCallback<T>) {
         val result = withContext(Dispatchers.Default) {
-            DiffUtil.calculateDiff(diffCallBack, false)
+            DiffUtil.calculateDiff(diffCallBack, true)
         }
         setNewDiffData(result, newData ?: listOf())
     }

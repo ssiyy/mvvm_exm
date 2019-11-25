@@ -87,7 +87,7 @@ class ArticleListAdapter(datas: List<Article>?) :
             .observeOn(AndroidSchedulers.mainThread())
             .`as`(lifecycleOwner.autoDisposable())
             .subscribe {
-                setNewDiffData(it, newList ?: listOf())
+                setNewDiffData(it, newList)
             }
     }
 
