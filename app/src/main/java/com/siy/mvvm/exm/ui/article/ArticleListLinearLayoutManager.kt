@@ -137,7 +137,7 @@ inline fun <reified T> Any.refectValue(fieldName: String, clazz: Class<*> = this
         field.isAccessible = true
         val fieldValue = field.get(this)
         field.isAccessible = false
-        fieldValue as T
+        fieldValue as? T
     } catch (e: Exception) {
         e.printStackTrace()
         null
