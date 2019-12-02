@@ -11,22 +11,14 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_first_pag
 
     override fun initViewsAndEvents(view: View) {
         mViewDataBinding?.run {
-            hostFrg = this@FirstPageFragment
+
+            click0s = mapOf(
+                "toMainPage" to { navController.navigateAnimate(MainFragmentDirections.actionMainFragmentToArticleListFragment()) },
+                "toSquarePage" to {navController.navigateAnimate(MainFragmentDirections.actionMainFragmentToSquareListFragment())},
+                "forResult" to { navController.navigateAnimate(MainFragmentDirections.actionMainFragmentToToResultFragment()) }
+
+            )
+
         }
     }
-
-    /**
-     * 首页
-     */
-    fun toMainPage() =
-        navController.navigateAnimate(MainFragmentDirections.actionMainFragmentToArticleListFragment())
-
-
-    /**
-     * ForResult
-     */
-    fun forResult() =
-        navController.navigateAnimate(MainFragmentDirections.actionMainFragmentToToResultFragment())
-
-
 }

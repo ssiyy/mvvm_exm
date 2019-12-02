@@ -37,11 +37,14 @@
         <action
             android:id="@+id/action_mainFragment_to_articleListFragment"
             app:destination="@id/articleListFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_squareListFragment"
+            app:destination="@id/squareListFragment" />
     </fragment>
     <fragment
         android:id="@+id/articleListFragment"
         android:name="com.siy.mvvm.exm.ui.article.ArticleListFragment"
-        android:label="FirstPageFragment"
+        android:label="ArticleListFragment"
         tools:layout="@layout/fragment_article_list">
         <action
             android:id="@+id/action_firstPageFragment_to_webViewFragment"
@@ -74,5 +77,14 @@
         <argument
             android:name="url"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/squareListFragment"
+        android:name="com.siy.mvvm.exm.ui.square.SquareListFragment"
+        tools:layout="@layout/fragment_article_list"
+        android:label="SquareListFragment" >
+        <action
+            android:id="@+id/action_squareListFragment_to_webViewFragment"
+            app:destination="@id/webViewFragment" />
     </fragment>
 </navigation>

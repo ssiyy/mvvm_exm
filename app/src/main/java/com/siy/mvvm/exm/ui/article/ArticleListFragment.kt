@@ -68,7 +68,7 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val viewModel: FirstPageViewModel by viewModels {
+    private val viewModel: ArticleListViewModel by viewModels {
         viewModelFactory
     }
 
@@ -101,7 +101,6 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
                 override fun searchApi(searchStr: String) {
                     viewModel.showArctiles(searchStr)
                 }
-
             }
 
             click0s = mapOf(
@@ -127,7 +126,6 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
         }
         setUpObserver(artAdapter, headerView)
     }
-
 
     private fun setUpObserver(adapter: ArticleListAdapter, headerView: LoopViewPager) {
         viewModel.banners.observe(viewLifecycleOwner) {
@@ -231,8 +229,8 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
     }
 }
 
-class FirstPageViewModel @Inject constructor(
-    rep: FirstPageRep
+class ArticleListViewModel @Inject constructor(
+    rep: ArticleListRep
 ) : ViewModel() {
     val banners = rep.getBanners()
 
@@ -293,7 +291,7 @@ class FirstPageViewModel @Inject constructor(
 }
 
 @Singleton
-class FirstPageRep @Inject constructor(
+class ArticleListRep @Inject constructor(
     private val service: GbdService,
     private val bannerDao: BannerDao,
     private val articleDao: ArticleDao,

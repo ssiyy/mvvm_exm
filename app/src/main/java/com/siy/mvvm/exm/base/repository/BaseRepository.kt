@@ -24,7 +24,7 @@ abstract class BaseRepository {
     /**
      * 网络连接是否可用
      */
-    private val isNetAvailable: Boolean
+    val isNetAvailable: Boolean
         get() = MvvmApplication.instance.netAvailable
 
     /**
@@ -241,6 +241,7 @@ abstract class BaseRepository {
             }
         }
 
+        //页面控制，当pageLiveData的value值发生改变时就请求网络数据
         val pageLiveData = MutableLiveData<Int>()
         val orgDataLiveData = pageLiveData.map(createReqNetParamByPage)
             .switchMap { reqNetParam ->

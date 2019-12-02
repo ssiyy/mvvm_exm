@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f3a840d5e006599a032ad7b2ee00a727",
+    "identityHash": "fd933a28df994e3dad238cb2bab0e875",
     "entities": [
       {
         "tableName": "banners",
@@ -217,12 +217,200 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "user_article",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `apkLink` TEXT, `audit` TEXT, `author` TEXT, `chapterId` TEXT, `chapterName` TEXT, `collect` TEXT, `courseId` TEXT, `desc` TEXT, `envelopePic` TEXT, `fresh` INTEGER NOT NULL, `link` TEXT NOT NULL, `niceDate` TEXT, `niceShareDate` TEXT, `origin` TEXT, `prefix` TEXT, `projectLink` TEXT, `publishTime` TEXT, `selfVisible` TEXT, `shareDate` TEXT, `shareUser` TEXT, `superChapterId` TEXT, `superChapterName` TEXT, `title` TEXT, `type` TEXT, `userId` TEXT, `visible` TEXT, `zan` TEXT, `_order_` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkLink",
+            "columnName": "apkLink",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "audit",
+            "columnName": "audit",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "author",
+            "columnName": "author",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "chapterId",
+            "columnName": "chapterId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "chapterName",
+            "columnName": "chapterName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "collect",
+            "columnName": "collect",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "courseId",
+            "columnName": "courseId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "desc",
+            "columnName": "desc",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "envelopePic",
+            "columnName": "envelopePic",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fresh",
+            "columnName": "fresh",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "link",
+            "columnName": "link",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "niceDate",
+            "columnName": "niceDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "niceShareDate",
+            "columnName": "niceShareDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "origin",
+            "columnName": "origin",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "prefix",
+            "columnName": "prefix",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "projectLink",
+            "columnName": "projectLink",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "publishTime",
+            "columnName": "publishTime",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "selfVisible",
+            "columnName": "selfVisible",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "shareDate",
+            "columnName": "shareDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "shareUser",
+            "columnName": "shareUser",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "superChapterId",
+            "columnName": "superChapterId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "superChapterName",
+            "columnName": "superChapterName",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "visible",
+            "columnName": "visible",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "zan",
+            "columnName": "zan",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "_order_",
+            "columnName": "_order_",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f3a840d5e006599a032ad7b2ee00a727')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fd933a28df994e3dad238cb2bab0e875')"
     ]
   }
 }

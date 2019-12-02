@@ -2,7 +2,7 @@
 
 
 buildscript {
-    val kotlinVersion by extra("1.3.50")
+    val kotlinVersion by extra("1.3.60")
     val navVersion by extra("2.2.0-alpha01")
 
     repositories {
@@ -11,7 +11,7 @@ buildscript {
 
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.5.1")
+        classpath("com.android.tools.build:gradle:3.5.2")
         classpath(kotlin("gradle-plugin", version = kotlinVersion))
 
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion")

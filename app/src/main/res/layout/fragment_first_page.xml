@@ -3,11 +3,20 @@
 
     <data>
 
-        <import type="com.siy.mvvm.exm.ui.main.FirstPageFragment" />
+
+
+        <!--<import type="com.siy.mvvm.exm.ui.main.FirstPageFragment" />
 
         <variable
             name="hostFrg"
-            type="com.siy.mvvm.exm.ui.main.FirstPageFragment" />
+            type="com.siy.mvvm.exm.ui.main.FirstPageFragment" />-->
+
+
+
+
+        <variable
+            name="click0s"
+            type="java.util.Map&lt;String,kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;&gt;" />
 
     </data>
 
@@ -20,7 +29,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{()->hostFrg.toMainPage()}"
+            android:onClick="@{()->click0s.toMainPage.invoke()}"
             android:padding="20dp"
             android:text="首页"
             android:textColor="@android:color/black"
@@ -29,7 +38,16 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{()->hostFrg.forResult()}"
+            android:onClick="@{()->click0s.toSquarePage.invoke()}"
+            android:padding="20dp"
+            android:text="广场"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->click0s.forResult.invoke()}"
             android:padding="20dp"
             android:text="ForResult"
             android:textColor="@android:color/black"

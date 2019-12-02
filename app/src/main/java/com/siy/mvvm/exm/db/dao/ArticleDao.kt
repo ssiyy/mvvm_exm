@@ -20,7 +20,7 @@ interface ArticleDao {
     fun queryDataSum(): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(workItems: List<Article>)
+    fun insertAll(articles: List<Article>)
 
     @Query(
         """

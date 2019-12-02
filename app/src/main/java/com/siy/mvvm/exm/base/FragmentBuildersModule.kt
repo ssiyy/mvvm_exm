@@ -2,6 +2,7 @@ package com.siy.mvvm.exm.base
 
 import com.siy.mvvm.exm.ui.article.ArticleListFragment
 import com.siy.mvvm.exm.ui.login.LoginFragment
+import com.siy.mvvm.exm.ui.square.SquareListFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -20,4 +21,7 @@ abstract class FragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeFirstPageFragment(): ArticleListFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeSquareListFragment(): SquareListFragment
 }

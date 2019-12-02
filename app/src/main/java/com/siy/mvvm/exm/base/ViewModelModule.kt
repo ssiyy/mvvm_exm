@@ -18,8 +18,9 @@ package com.siy.mvvm.exm.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.siy.mvvm.exm.ui.article.FirstPageViewModel
+import com.siy.mvvm.exm.ui.article.ArticleListViewModel
 import com.siy.mvvm.exm.ui.login.LoginViewModel
+import com.siy.mvvm.exm.ui.square.SqueareListModel
 import com.siy.mvvm.exm.viewmodel.MvvmViewModelFactory
 import dagger.Binds
 import dagger.Module
@@ -39,8 +40,11 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(FirstPageViewModel::class)
-    abstract fun bindFirstPageViewModel(viewModel: FirstPageViewModel): ViewModel
+    @ViewModelKey(ArticleListViewModel::class)
+    abstract fun bindArticleListViewModel(viewModel: ArticleListViewModel): ViewModel
 
-
+    @Binds
+    @IntoMap
+    @ViewModelKey(SqueareListModel::class)
+    abstract fun bindSqueareListModel(viewModel: SqueareListModel): ViewModel
 }

@@ -35,4 +35,7 @@ class DbModule {
     @Provides
     fun articleDao(db: MvvmDb) = db.articleDao()
 
+    @Singleton
+    @Provides
+    fun userArticleDao(db: MvvmDb) = db.userArticleDao()
 }
