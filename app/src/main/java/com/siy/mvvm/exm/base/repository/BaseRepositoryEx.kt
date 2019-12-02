@@ -1,5 +1,6 @@
 package com.siy.mvvm.exm.base.repository
 
+import android.util.Log
 import com.siy.mvvm.exm.http.*
 import com.siy.mvvm.exm.utils.detailMsg
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -85,42 +86,44 @@ fun <DbResultType, NetResultType> BaseRepository.loadFlowData(
 
 ) = flow<Resource<DbResultType>> {
     val dbValue = loadFromDb().first()
-    if (shouldFetch(dbValue)) {
-        emit(Resource.loading(dbValue))
+   val assss= if (shouldFetch(dbValue)) {
+      //  emit(Resource.loading(dbValue))
         if (isNetAvailable) {
             val netResponse = fetchNet()
             if (isBusinessSuccess(netResponse)) {
                 val netResult = net2DbResultConvert(netResponse)
                 insertDb(netResult)
-                emitAll(
+
                     loadFromDb().map {
                         Resource.success(it)
-                    })
+                    }
             } else {
                 fetchFaile()
-                emitAll(
+
                     loadFromDb().map {
                         Resource.error(
                             if (netResponse is BaseBean<*>) netResponse.errorMsg
                                 ?: "未知错误" else "未知错误", it
                         )
-                    })
+                    }
             }
         } else {
             fetchFaile()
-            emitAll(
+
                 loadFromDb().map {
                     Resource.nonnetwork("网络连接不可用", it)
                 }
-            )
+
         }
     } else {
-        emitAll(
+
             loadFromDb().map {
                 Resource.success(it)
             }
-        )
+
     }
+
+    emitAll(assss)
 }.onStart {
     emit(Resource.loading(null))
 }.catch { e ->
@@ -133,8 +136,10 @@ data class ListPageing<T>(
     val list: Flow<T>,
     val refresh: () -> Boolean,
     val loadData: () -> Unit,
+    val testfunc: () -> Unit,
     val loadStatus: Flow<PageRes>,
-    val refreshStatus: Flow<PageRes>
+    val refreshStatus: Flow<PageRes>,
+    val test: Flow<String>
 )
 
 @ExperimentalCoroutinesApi
@@ -233,7 +238,46 @@ fun <DbResultType, NetResultType, ReqNetParam> BaseRepository.loadFlowDataByPage
             it.status in listOf(Status.NONNETWORK, Status.ERROR, Status.SUCCESS)
         }.map {
             it.data
+        }.catch { e ->
+            Log.e("siy", e.detailMsg)
+            emit(null)
         }
+
+    //-----------------------------------------------------
+    var aa = 0
+
+    val testChannel = ConflatedBroadcastChannel<Int>()
+    val testFlow = testChannel.asFlow()
+        .map { pageIndex ->
+            createReqNetParamByPage(pageIndex)
+        }.flatMapConcat { reqNetParam ->
+            val f = loadFlowData(
+                loadFromDb,
+                { fetchNet(reqNetParam) }
+                ,
+                {
+                    performPage(it)
+                    insertDb(it, isRefresh)
+                }, net2DbResultConvert
+            )
+            f
+
+            /*  flow<Resource<DbResultType>> {
+                  emitAll(
+                      flow {
+                        emit(  Resource.success(null))
+                      }
+                  )
+              }*/
+
+            //    Resource.success(null)
+        }.filter {
+            it.status == Status.SUCCESS
+        }
+        .map {
+            "$aa:${it.status}"
+        }
+
 
     val refreshLamda = {
         isRefresh = true
@@ -253,7 +297,11 @@ fun <DbResultType, NetResultType, ReqNetParam> BaseRepository.loadFlowDataByPage
             loadMore = null
             pageChannel.offer(page)
         },
+        testfunc = {
+            testChannel.offer(aa++)
+        },
         refreshStatus = refreshStatus.asFlow(),
-        loadStatus = loadStatus.asFlow()
+        loadStatus = loadStatus.asFlow(),
+        test = testFlow
     )
 }
