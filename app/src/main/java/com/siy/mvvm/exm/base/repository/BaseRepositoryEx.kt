@@ -46,19 +46,19 @@ fun <NeedResultType, NetResultType> BaseRepository.loadFlowDataNoCache(
                 //业务请求不成功，提取服务器那边返回的错误
                 Resource.error(
                     if (result is BaseBean<*>) result.errorMsg
-                        ?: "未知错误" else "未知错误", needResult
+                        ?: "unknow error" else "unknow error", needResult
                 )
             }
         } else {
             //没有网络
-            Resource.nonnetwork("网络连接不可用", null)
+            Resource.nonnetwork("Network connection is unavailable", null)
         }
     )
 }.onStart {
     emit(Resource.loading(null))
 }.catch { e ->
     Timber.e(e.detailMsg)
-    emit(Resource.error(e.message ?: "unknow", null))
+    emit(Resource.error(e.message ?: "unknow error", null))
 }
 
 fun <DbResultType, NetResultType> BaseRepository.loadFlowData(
@@ -102,7 +102,7 @@ fun <DbResultType, NetResultType> BaseRepository.loadFlowData(
                     loadFromDb().map {
                         Resource.error(
                             if (netResponse is BaseBean<*>) netResponse.errorMsg
-                                ?: "未知错误" else "未知错误", it
+                                ?: "unknow error" else "unknow error", it
                         )
                     })
             }
@@ -110,7 +110,7 @@ fun <DbResultType, NetResultType> BaseRepository.loadFlowData(
             fetchFaile()
             emitAll(
                 loadFromDb().map {
-                    Resource.nonnetwork("网络连接不可用", it)
+                    Resource.nonnetwork("Network connection is unavailable", it)
                 }
             )
         }
@@ -125,7 +125,11 @@ fun <DbResultType, NetResultType> BaseRepository.loadFlowData(
     emit(Resource.loading(null))
 }.catch { e ->
     Timber.e(e.detailMsg)
-    emit(Resource.error(e.message ?: "unknow", null))
+    emitAll(
+        loadFromDb().map {
+            Resource.error(e.message ?: "unknow", it)
+        }
+    )
 }
 
 
@@ -244,10 +248,6 @@ fun <DbResultType, NetResultType, ReqNetParam> BaseRepository.loadFlowDataByPage
                     }
                 }
             }
-            it
-        }.filter {
-            it.status in listOf(Status.NONNETWORK, Status.ERROR, Status.SUCCESS)
-        }.map {
             it.data
         }
 

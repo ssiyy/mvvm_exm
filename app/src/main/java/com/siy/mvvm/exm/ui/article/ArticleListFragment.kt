@@ -21,7 +21,6 @@ import com.siy.mvvm.exm.db.dao.ArticleDao
 import com.siy.mvvm.exm.db.dao.BannerDao
 import com.siy.mvvm.exm.http.GbdService
 import com.siy.mvvm.exm.http.PAGESTATUS
-import com.siy.mvvm.exm.http.Status
 import com.siy.mvvm.exm.ui.Banner
 import com.siy.mvvm.exm.utils.dip2px
 import com.siy.mvvm.exm.utils.inflater
@@ -129,13 +128,7 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
 
     private fun setUpObserver(adapter: ArticleListAdapter, headerView: LoopViewPager) {
         viewModel.banners.observe(viewLifecycleOwner) {
-            when (it.status) {
-                Status.SUCCESS, Status.ERROR -> {
-                    hideLoadingDialog()
-                    headerView.adapter = BannerAdapter(viewLifecycleOwner.lifecycleScope, it.data)
-                }
-                else -> Unit
-            }
+            headerView.adapter = BannerAdapter(viewLifecycleOwner.lifecycleScope, it.data)
         }
 
         viewModel.articleList.observe(viewLifecycleOwner) {

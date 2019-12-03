@@ -66,16 +66,16 @@ abstract class BaseRepository {
                     emit(
                         Resource.error(
                             if (result is BaseBean<*>) result.errorMsg
-                                ?: "未知错误" else "未知错误", needResult
+                                ?: "unknow error" else "unknow error", needResult
                         )
                     )
                 }
             } else {
-                emit(Resource.nonnetwork("网络连接不可用", null))
+                emit(Resource.nonnetwork("Network connection is unavailable", null))
             }
         } catch (e: Exception) {
             Timber.e(e.detailMsg)
-            emit(Resource.error(e.message ?: "unknow", null))
+            emit(Resource.error(e.message ?: "unknow error", null))
         }
     }
 
@@ -126,18 +126,30 @@ abstract class BaseRepository {
             result.removeSource(dbSource)
             if (shouldFetch(db)) {
                 if (isNetAvailable) {
-                    result.addSource(liveData {
+                    //需要请求网络
+                    result.addSource(dbSource) { newData ->
+                        //数据库获取loading需要显示的数据
+                        setValue(Resource.loading(newData))
+                    }
+
+                    val fetchNetReponse = liveData {
                         try {
                             emit(fetchNet())
                         } catch (e: Exception) {
+                            result.removeSource(dbSource)
                             Timber.e(e.detailMsg)
                             fetchFaile()
                             result.addSource(dbSource) { newValue ->
-                                setValue(Resource.error(e.message ?: "未知错误", newValue))
+                                setValue(Resource.error(e.message ?: "unknow error", newValue))
                             }
                         }
-                    }) { fetchResult ->
+                    }
+
+                    result.addSource(fetchNetReponse) { fetchResult ->
+                        result.removeSource(dbSource)
+                        result.removeSource(fetchNetReponse)
                         try {
+
                             if (isBusinessSuccess(fetchResult)) {
                                 val dbResult = net2DbResultConvert(fetchResult)
                                 insertDb(dbResult)
@@ -150,7 +162,7 @@ abstract class BaseRepository {
                                     setValue(
                                         Resource.error(
                                             if (fetchResult is BaseBean<*>) fetchResult.errorMsg
-                                                ?: "未知错误" else "未知错误", newValue
+                                                ?: "unknow error" else "unknow error", newValue
                                         )
                                     )
                                 }
@@ -159,14 +171,14 @@ abstract class BaseRepository {
                             Timber.e(e.detailMsg)
                             fetchFaile()
                             result.addSource(dbSource) { newValue ->
-                                setValue(Resource.error(e.message ?: "未知错误", newValue))
+                                setValue(Resource.error(e.message ?: "unknow error", newValue))
                             }
                         }
                     }
                 } else {
                     fetchFaile()
                     result.addSource(dbSource) { newValue ->
-                        setValue(Resource.nonnetwork("网络连接不可用", newValue))
+                        setValue(Resource.nonnetwork("Network connection is unavailable", newValue))
                     }
                 }
             } else {
@@ -260,6 +272,7 @@ abstract class BaseRepository {
         listLiveData.addSource(orgDataLiveData) {
             when (it.status) {
                 Status.LOADING -> {
+                    listLiveData.value = it.data
                     if (isRefresh) {
                         refreshStatus
                     } else {
