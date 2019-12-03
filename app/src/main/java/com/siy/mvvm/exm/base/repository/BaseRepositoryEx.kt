@@ -1,6 +1,5 @@
 package com.siy.mvvm.exm.base.repository
 
-import android.util.Log
 import com.siy.mvvm.exm.http.*
 import com.siy.mvvm.exm.utils.detailMsg
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -86,44 +85,42 @@ fun <DbResultType, NetResultType> BaseRepository.loadFlowData(
 
 ) = flow<Resource<DbResultType>> {
     val dbValue = loadFromDb().first()
-   val assss= if (shouldFetch(dbValue)) {
-      //  emit(Resource.loading(dbValue))
+    if (shouldFetch(dbValue)) {
+        emit(Resource.loading(dbValue))
         if (isNetAvailable) {
             val netResponse = fetchNet()
             if (isBusinessSuccess(netResponse)) {
                 val netResult = net2DbResultConvert(netResponse)
                 insertDb(netResult)
-
+                emitAll(
                     loadFromDb().map {
                         Resource.success(it)
-                    }
+                    })
             } else {
                 fetchFaile()
-
+                emitAll(
                     loadFromDb().map {
                         Resource.error(
                             if (netResponse is BaseBean<*>) netResponse.errorMsg
                                 ?: "未知错误" else "未知错误", it
                         )
-                    }
+                    })
             }
         } else {
             fetchFaile()
-
+            emitAll(
                 loadFromDb().map {
                     Resource.nonnetwork("网络连接不可用", it)
                 }
-
+            )
         }
     } else {
-
+        emitAll(
             loadFromDb().map {
                 Resource.success(it)
             }
-
+        )
     }
-
-    emitAll(assss)
 }.onStart {
     emit(Resource.loading(null))
 }.catch { e ->
@@ -134,12 +131,10 @@ fun <DbResultType, NetResultType> BaseRepository.loadFlowData(
 
 data class ListPageing<T>(
     val list: Flow<T>,
-    val refresh: () -> Boolean,
+    val refresh: () -> Unit,
     val loadData: () -> Unit,
-    val testfunc: () -> Unit,
     val loadStatus: Flow<PageRes>,
-    val refreshStatus: Flow<PageRes>,
-    val test: Flow<String>
+    val refreshStatus: Flow<PageRes>
 )
 
 @ExperimentalCoroutinesApi
@@ -185,11 +180,25 @@ fun <DbResultType, NetResultType, ReqNetParam> BaseRepository.loadFlowDataByPage
         }
     }
 
+    val sendData: suspend (ConflatedBroadcastChannel<PageRes>, PageRes) -> Unit =
+        { channel, resource ->
+            if (!channel.isClosedForSend) {
+                channel.send(resource)
+            }
+        }
+
+    val offerData: (ConflatedBroadcastChannel<Int>, Int) -> Unit =
+        { channel, resource ->
+            if (!channel.isClosedForSend) {
+                channel.offer(resource)
+            }
+        }
+
     val pageChannel = ConflatedBroadcastChannel<Int>()
     val listFlow = pageChannel.asFlow()
         .map { pageIndex ->
             createReqNetParamByPage(pageIndex)
-        }.flatMapConcat { reqNetParam ->
+        }.flatMapLatest { reqNetParam ->
             loadFlowData(
                 loadFromDb,
                 { fetchNet(reqNetParam) }
@@ -202,34 +211,36 @@ fun <DbResultType, NetResultType, ReqNetParam> BaseRepository.loadFlowDataByPage
         }.map {
             when (it.status) {
                 Status.LOADING -> {
-                    if (isRefresh) {
-                        refreshStatus
-                    } else {
-                        loadStatus
-                    }.offer(PageRes.loading(null))
+                    sendData(
+                        if (isRefresh) {
+                            refreshStatus
+                        } else {
+                            loadStatus
+                        }, PageRes.loading(null)
+                    )
                 }
                 Status.NONNETWORK, Status.ERROR -> {
                     if (isRefresh) {
-                        refreshStatus.offer(PageRes.error(it.message))
+                        sendData(refreshStatus, PageRes.error(it.message))
                     }
 
                     //无论是刷新还是加载更多，都需要知道是否可以加载更多
                     if (loadMore != null) {
-                        loadStatus.offer(PageRes.create(loadMore!!, it.message))
+                        sendData(loadStatus, PageRes.create(loadMore!!, it.message))
                     } else {
-                        loadStatus.offer(PageRes.error(it.message))
+                        sendData(loadStatus, PageRes.error(it.message))
                     }
                 }
                 Status.SUCCESS -> {
                     if (isRefresh) {
-                        refreshStatus.offer(PageRes.complete(null))
+                        sendData(refreshStatus, PageRes.complete(null))
                     }
 
                     //无论是刷新还是加载更多，都需要知道是否可以加载更多
                     if (loadMore != null) {
-                        loadStatus.offer(PageRes.create(loadMore!!, it.message))
+                        sendData(loadStatus, PageRes.create(loadMore!!, it.message))
                     } else {
-                        loadStatus.offer(PageRes.complete(it.message))
+                        sendData(loadStatus, PageRes.complete(it.message))
                     }
                 }
             }
@@ -238,51 +249,12 @@ fun <DbResultType, NetResultType, ReqNetParam> BaseRepository.loadFlowDataByPage
             it.status in listOf(Status.NONNETWORK, Status.ERROR, Status.SUCCESS)
         }.map {
             it.data
-        }.catch { e ->
-            Log.e("siy", e.detailMsg)
-            emit(null)
         }
-
-    //-----------------------------------------------------
-    var aa = 0
-
-    val testChannel = ConflatedBroadcastChannel<Int>()
-    val testFlow = testChannel.asFlow()
-        .map { pageIndex ->
-            createReqNetParamByPage(pageIndex)
-        }.flatMapConcat { reqNetParam ->
-            val f = loadFlowData(
-                loadFromDb,
-                { fetchNet(reqNetParam) }
-                ,
-                {
-                    performPage(it)
-                    insertDb(it, isRefresh)
-                }, net2DbResultConvert
-            )
-            f
-
-            /*  flow<Resource<DbResultType>> {
-                  emitAll(
-                      flow {
-                        emit(  Resource.success(null))
-                      }
-                  )
-              }*/
-
-            //    Resource.success(null)
-        }.filter {
-            it.status == Status.SUCCESS
-        }
-        .map {
-            "$aa:${it.status}"
-        }
-
 
     val refreshLamda = {
         isRefresh = true
         page = initPageIndex
-        pageChannel.offer(page)
+        offerData(pageChannel, page)
     }
 
     if (firstRefresh) {
@@ -295,13 +267,9 @@ fun <DbResultType, NetResultType, ReqNetParam> BaseRepository.loadFlowDataByPage
         loadData = {
             isRefresh = false
             loadMore = null
-            pageChannel.offer(page)
-        },
-        testfunc = {
-            testChannel.offer(aa++)
+            offerData(pageChannel, page)
         },
         refreshStatus = refreshStatus.asFlow(),
-        loadStatus = loadStatus.asFlow(),
-        test = testFlow
+        loadStatus = loadStatus.asFlow()
     )
 }

@@ -31,4 +31,7 @@ interface UserArticleDao {
 
     @Query("delete from user_article")
     fun deleteAll()
+
+    @Query("delete from user_article where id = :id")
+    fun deleteById(id:Int)
 }

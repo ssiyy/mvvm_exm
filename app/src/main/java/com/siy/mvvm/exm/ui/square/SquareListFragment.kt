@@ -8,6 +8,7 @@ import com.siy.mvvm.exm.base.Injectable
 import com.siy.mvvm.exm.base.repository.BaseRepository
 import com.siy.mvvm.exm.base.repository.loadFlowDataByPage
 import com.siy.mvvm.exm.base.ui.BaseFragment
+import com.siy.mvvm.exm.base.ui.navigateAnimate
 import com.siy.mvvm.exm.databinding.FragmentArticleListBinding
 import com.siy.mvvm.exm.db.dao.UserArticleDao
 import com.siy.mvvm.exm.http.GbdService
@@ -35,7 +36,7 @@ class SquareListFragment(override val layoutId: Int = R.layout.fragment_article_
         mViewDataBinding?.run {
             header = object : CommonHeader() {
                 init {
-                    title.value = "广场广场广场广场广场广场广场广场广场广场"
+                    title.value = "广场"
                     showTitleIcon.value = false
                 }
 
@@ -58,16 +59,14 @@ class SquareListFragment(override val layoutId: Int = R.layout.fragment_article_
             click1s = mapOf(
                 "onItemClick" to
                         fun(postion: Int) {
-                        /*    val item = squareAdapter.getItem(postion)
+                            val item = squareAdapter.getItem(postion)
                             item?.let {
                                 navController.navigateAnimate(
                                     SquareListFragmentDirections.actionSquareListFragmentToWebViewFragment(
                                         it.link
                                     )
                                 )
-                            }*/
-
-                            viewModel.test()
+                            }
                         }
             )
 
@@ -79,13 +78,8 @@ class SquareListFragment(override val layoutId: Int = R.layout.fragment_article_
     }
 
     private fun setUpObserver(adapter: SquareListAdapter) {
-        viewModel.testLiveData.observe(viewLifecycleOwner){
-            mViewDataBinding?.header?.title?.value = it
-        }
-
         viewModel.articleList.observe(viewLifecycleOwner) {
             adapter.asyncSetDisffData(it, lifecycleScope)
-            stopRefresh()
         }
 
         viewModel.loadState.observe(viewLifecycleOwner) {
@@ -157,10 +151,6 @@ class SqueareListModel @Inject constructor(
         it.refreshStatus.asLiveData()
     }
 
-    val testLiveData = listPageing.switchMap {
-        it.test.asLiveData()
-    }
-
     /**
      * 刷新方法
      */
@@ -173,13 +163,6 @@ class SqueareListModel @Inject constructor(
      */
     fun loadMore() {
         listPageing.value?.loadData?.invoke()
-    }
-
-    /**
-     * test
-     */
-    fun test() {
-        listPageing.value?.testfunc?.invoke()
     }
 
     fun showUserArctiles(str: String): Boolean {
