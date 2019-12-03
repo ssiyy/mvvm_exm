@@ -142,12 +142,48 @@ Google Issue Tracker有2个相关的Issue:
 
 为什么要确保视图有id才能自动缓存视图？答案[看这里](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0512/2870.html)
 ## 数据管理
-![data](https://developer.android.google.cn/topic/libraries/architecture/images/network-bound-resource.png)
+# a、NetworkBoundResource
+![data](./img/20191030174047610.png)
+
+这个图也是来自于Android应用架构指南。
+
+它首先观察资源的数据库。首次从数据库中加载条目时，NetworkBoundResource会检查结果是好到足以分派，还是应从网络中重新获取。请注意，考虑到您可能会希望在通过网络更新数据的同时显示缓存的数据，这两种情况可能会同时发生。
+
+如果网络调用成功完成，它会将响应保存到数据库中并重新初始化数据流。如果网络请求失败，NetworkBoundResource 会直接分派失败消息。
+
+Tips:
+
+注意：在将新数据保存到磁盘后，我们会重新初始化来自数据库的数据流。不过，通常我们不需要这样做，因为数据库本身正好会分派更改。
+
+请注意，依赖于数据库来分派更改将产生相关副作用，这样不太好，原因是，如果由于数据未更改而使得数据库最终未分派更改，就会出现这些副作用的未定义行为。
+
+此外，不要分派来自网络的结果，因为这样将违背单一可信来源原则。毕竟，数据库可能包含在“保存”操作期间更改数据值的触发器。同样，不要在没有新数据的情况下分派 `SUCCESS`，因为如果这样做，客户端会接收错误版本的数据。
+
+代码实现也可以在google的官方demo中找到：[NetworkBoundResource](https://github.com/android/architecture-components-samples/blob/88747993139224a4bb6dbe985adf652d557de621/GithubBrowserSample/app/src/main/java/com/android/example/github/repository/NetworkBoundResource.kt)
+
+Java版：[NetworkBoundResource](https://www.programcreek.com/java-api-examples/?code=googlesamples%2Fandroid-architecture-components%2Fandroid-architecture-components-master%2FGithubBrowserSample%2Fapp%2Fsrc%2Fmain%2Fjava%2Fcom%2Fandroid%2Fexample%2Fgithub%2Frepository%2FNetworkBoundResource.java#)
+
+有代码我还讲什么？(⊙o⊙)…
+
+我要讲的是Kotlin的协程的实现，因为我在网上并没有找到实现方式。参考文档[在这里](https://developer.android.google.cn/topic/libraries/architecture/coroutines#suspend)
 
 Kotlin协程的实现上面的逻辑[BaseRepository.kt](https://github.com/Siy-Wu/mvvm_exm/blob/master/app/src/main/java/com/siy/mvvm/exm/base/repository/BaseRepository.kt)
 
 为什么要用协程实现这个呢？因为Room 和 retrofit2-2.6.0都支持协程的支持用起来很方便
 
 还有一个优点：liveData构建块用作协程和LiveData之间的结构化并发原语。当LiveData变为活动状态时，该代码块开始执行；当LiveData变为非活动状态时，该代码块在可配置的超时后自动取消。如果在完成之前将其取消，则如果LiveData再次变为活动状态，它将重新启动。如果它在先前的运行中成功完成，则不会重新启动。请注意，只有自动取消后，它才会重新启动。如果由于任何其他原因取消了该块(例如，引发CancelationException)，则不会重新启动它。
+
+# b、ADS
+在[Android Dev Summit (ADS) 2019 app](https://medium.com/androiddevelopers/lessons-learnt-using-coroutines-flow-4a6b285c0d06)中的最佳实践中又提出了一种应用程序体系结构，它遵循[Android应用架构指南](https://developer.android.google.cn/jetpack/docs/guide#recommended-app-arch)并添加了一个UserCases层，该层有助于分离关注点，使类保持小巧，集中，可重用和可测试：
+
+![data](./img/20191203153911627.png)
+
+与许多Android应用程序一样，ADS应用程序也从网络或缓存中延迟加载数据；我们发现这是的理想用例Flow。对于单次请求操作，[suspend functions](https://medium.com/androiddevelopers/coroutines-on-android-part-iii-real-work-2ba8a2ec2f45) 更合适。
+
+ADS应用程序所遵循的原则LiveData，即不将其LiveData用于体系结构的所有层，仅用于View和ViewModel之间的通信，而协程用于UseCase和体系结构的较低层。
+
+代码实现：[BaseRepositoryEx.kt](https://github.com/Siy-Wu/mvvm_exm/blob/master/app/src/main/java/com/siy/mvvm/exm/base/repository/BaseRepositoryEx.kt)
+
+有关的介绍视频：https://www.jianshu.com/p/52f30bcf1945
 
 详细内容可以查看这边文章：https://blog.csdn.net/baidu_34012226/article/details/102458177
