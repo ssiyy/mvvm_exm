@@ -159,15 +159,13 @@ Tips:
 
 此外，不要分派来自网络的结果，因为这样将违背单一可信来源原则。毕竟，数据库可能包含在“保存”操作期间更改数据值的触发器。同样，不要在没有新数据的情况下分派 `SUCCESS`，因为如果这样做，客户端会接收错误版本的数据。
 
-代码实现也可以在google的官方demo中找到：[NetworkBoundResource](https://github.com/android/architecture-components-samples/blob/88747993139224a4bb6dbe985adf652d557de621/GithubBrowserSample/app/src/main/java/com/android/example/github/repository/NetworkBoundResource.kt)
+Kotlin代码实现也可以在google的官方demo中找到：[NetworkBoundResource](https://github.com/android/architecture-components-samples/blob/88747993139224a4bb6dbe985adf652d557de621/GithubBrowserSample/app/src/main/java/com/android/example/github/repository/NetworkBoundResource.kt)
 
 Java版：[NetworkBoundResource](https://www.programcreek.com/java-api-examples/?code=googlesamples%2Fandroid-architecture-components%2Fandroid-architecture-components-master%2FGithubBrowserSample%2Fapp%2Fsrc%2Fmain%2Fjava%2Fcom%2Fandroid%2Fexample%2Fgithub%2Frepository%2FNetworkBoundResource.java#)
 
-有代码我还讲什么？(⊙o⊙)…
+协程版：[CoroutineNetworkBoundResource](https://github.com/android/architecture-components-samples/blob/move-repo-to-buildLiveData-4/GithubBrowserSample/app/src/main/java/com/android/example/github/repository/CoroutineNetworkBoundResource.kt)
 
-我要讲的是Kotlin的协程的实现，因为我在网上并没有找到实现方式。参考文档[在这里](https://developer.android.google.cn/topic/libraries/architecture/coroutines#suspend)
-
-Kotlin协程的实现上面的逻辑[BaseRepository.kt](https://github.com/Siy-Wu/mvvm_exm/blob/master/app/src/main/java/com/siy/mvvm/exm/base/repository/BaseRepository.kt)
+关于kotlin协程与架构组件一起使用的文档[在这里](https://developer.android.google.cn/topic/libraries/architecture/coroutines#suspend)
 
 为什么要用协程实现这个呢？因为Room 和 retrofit2-2.6.0都支持协程的支持用起来很方便
 
@@ -182,7 +180,11 @@ Kotlin协程的实现上面的逻辑[BaseRepository.kt](https://github.com/Siy-W
 
 ADS应用程序所遵循的原则LiveData，即不将其LiveData用于体系结构的所有层，仅用于View和ViewModel之间的通信，而协程用于UseCase和体系结构的较低层。
 
-代码实现：[BaseRepositoryEx.kt](https://github.com/Siy-Wu/mvvm_exm/blob/master/app/src/main/java/com/siy/mvvm/exm/base/repository/BaseRepositoryEx.kt)
+因为这个原因NetworkBoundResource又多了一个Flow的版本
+
+Flow版：[FlowNetworkBoundResource.kt](https://github.com/Siy-Wu/mvvm_exm/blob/master/app/src/main/java/com/siy/mvvm/exm/base/repository/FlowNetworkBoundResource.kt)
+
+Flow版参考[这里](https://stackoverflow.com/questions/58486364/networkboundresource-with-kotlin-coroutines)实现
 
 有关的介绍视频：https://www.jianshu.com/p/52f30bcf1945
 
