@@ -5,8 +5,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.base.Injectable
-import com.siy.mvvm.exm.base.repository.BaseRepository
-import com.siy.mvvm.exm.base.repository.loadFlowDataByPage
+import com.siy.mvvm.exm.base.repository.loadDataByPage
 import com.siy.mvvm.exm.base.ui.BaseFragment
 import com.siy.mvvm.exm.base.ui.navigateAnimate
 import com.siy.mvvm.exm.databinding.FragmentArticleListBinding
@@ -133,7 +132,7 @@ class SqueareListModel @Inject constructor(
      * 列表
      */
     val articleList = listPageing.switchMap {
-        it.list.asLiveData()
+        it.list
     }
 
 
@@ -141,14 +140,14 @@ class SqueareListModel @Inject constructor(
      * 加载状态
      */
     val loadState = listPageing.switchMap {
-        it.loadStatus.asLiveData()
+        it.loadStatus
     }
 
     /**
      * 刷新状态
      */
     val refreshState = listPageing.switchMap {
-        it.refreshStatus.asLiveData()
+        it.refreshStatus
     }
 
     /**
@@ -178,10 +177,10 @@ class SqueareListModel @Inject constructor(
 class SqueareListRep @Inject constructor(
     private val service: GbdService,
     private val dao: UserArticleDao
-) : BaseRepository() {
+)  {
 
     fun getUserArtclesByPage(search: String) =
-        loadFlowDataByPage(
+        loadDataByPage(
             {
                 dao.queryBySearchStr(search)
             },

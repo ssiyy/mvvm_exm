@@ -13,7 +13,8 @@ import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.base.Injectable
 import com.siy.mvvm.exm.base.MvvmDb
 import com.siy.mvvm.exm.base.glide.GlideApp
-import com.siy.mvvm.exm.base.repository.BaseRepository
+import com.siy.mvvm.exm.base.repository.flowNetworkBoundResource
+import com.siy.mvvm.exm.base.repository.loadFlowDataByPage
 import com.siy.mvvm.exm.base.ui.BaseFragment
 import com.siy.mvvm.exm.base.ui.navigateAnimate
 import com.siy.mvvm.exm.databinding.FragmentArticleListBinding
@@ -128,7 +129,9 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
 
     private fun setUpObserver(adapter: ArticleListAdapter, headerView: LoopViewPager) {
         viewModel.banners.observe(viewLifecycleOwner) {
-            headerView.adapter = BannerAdapter(viewLifecycleOwner.lifecycleScope, it.data)
+            if (it.data?.isNotEmpty() == true) {
+                headerView.adapter = BannerAdapter(viewLifecycleOwner.lifecycleScope, it.data)
+            }
         }
 
         viewModel.articleList.observe(viewLifecycleOwner) {
@@ -225,7 +228,7 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
 class ArticleListViewModel @Inject constructor(
     rep: ArticleListRep
 ) : ViewModel() {
-    val banners = rep.getBanners()
+    val banners = rep.getBanners().asLiveData()
 
     /**
      * 搜索的关键字
@@ -242,7 +245,7 @@ class ArticleListViewModel @Inject constructor(
      * 列表
      */
     val articleList = articleResult.switchMap {
-        it.list
+        it.list.asLiveData()
     }
 
 
@@ -250,14 +253,14 @@ class ArticleListViewModel @Inject constructor(
      * 加载状态
      */
     val loadState = articleResult.switchMap {
-        it.loadStatus
+        it.loadStatus.asLiveData()
     }
 
     /**
      * 刷新状态
      */
     val refreshState = articleResult.switchMap {
-        it.refreshStatus
+        it.refreshStatus.asLiveData()
     }
 
     /**
@@ -290,16 +293,13 @@ class ArticleListRep @Inject constructor(
     private val articleDao: ArticleDao,
     private val db: MvvmDb
 
-) : BaseRepository() {
+) {
 
 
-    fun getBanners() = loadData(
-        {
-            bannerDao.queryAll()
-        },
-        {
-            service.getBanner()
-        }, {
+    fun getBanners() = flowNetworkBoundResource(
+        loadFromDb = bannerDao::queryAll,
+        fetch = service::getBanner,
+        saveCallResult = {
             db.runInTransaction {
                 bannerDao.deleteAll()
                 it?.let { banners ->
@@ -311,7 +311,7 @@ class ArticleListRep @Inject constructor(
 
 
     fun getArtclesByPage(search: String) =
-        loadDataByPage(
+        loadFlowDataByPage(
             {
                 articleDao.queryBySearchStr(search)
             },

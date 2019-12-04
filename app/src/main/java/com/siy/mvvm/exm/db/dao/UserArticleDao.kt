@@ -1,5 +1,6 @@
 package com.siy.mvvm.exm.db.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -23,7 +24,7 @@ interface UserArticleDao {
         where unioncontent like '%'||:searchStr||'%' order by _order_ asc
     """
     )
-    fun queryBySearchStr(searchStr: String): Flow<List<UserArticle>>
+    fun queryBySearchStr(searchStr: String): LiveData<List<UserArticle>>
 
 
     @Query("select * from user_article")

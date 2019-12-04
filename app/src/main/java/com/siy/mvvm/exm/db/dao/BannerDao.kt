@@ -1,11 +1,11 @@
 package com.siy.mvvm.exm.db.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.siy.mvvm.exm.ui.Banner
+import kotlinx.coroutines.flow.Flow
 
 
 /**
@@ -23,5 +23,5 @@ interface BannerDao {
     fun deleteAll()
 
     @Query("select * from banners")
-    fun queryAll(): LiveData<List<Banner>>
+    fun queryAll(): Flow<List<Banner>>
 }

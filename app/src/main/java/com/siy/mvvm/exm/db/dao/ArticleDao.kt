@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.siy.mvvm.exm.ui.Article
+import kotlinx.coroutines.flow.Flow
 
 
 /**
@@ -29,7 +30,7 @@ interface ArticleDao {
         where unioncontent like '%'||:searchStr||'%' order by _order_ asc
     """
     )
-    fun queryBySearchStr(searchStr: String): LiveData<List<Article>>
+    fun queryBySearchStr(searchStr: String): Flow<List<Article>>
 
     @Query("select * from articles")
     fun queryAll(): LiveData<List<Article>>

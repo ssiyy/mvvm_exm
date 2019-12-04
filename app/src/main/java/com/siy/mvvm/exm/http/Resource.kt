@@ -17,6 +17,7 @@
 package com.siy.mvvm.exm.http
 
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.flow.Flow
 
 /**
  * A generic class that holds a value with its loading status.
@@ -63,33 +64,11 @@ data class Listing<T>(
 )
 
 
-data class PageResource<out T>(val isRefresh: Boolean, val status: Status, val data: T?, val message: String?) {
-    private val resource: Resource<T> = Resource(status, data, message)
-
-    companion object {
-        fun <T> success(isRefresh: Boolean, data: T?): PageResource<T> {
-            return PageResource(isRefresh, Status.SUCCESS, data, null)
-        }
-
-
-        fun <T> error(isRefresh: Boolean, msg: String, data: T?): PageResource<T> {
-            return PageResource(isRefresh, Status.ERROR, data, msg)
-        }
-
-        fun <T> nonnetwork(isRefresh: Boolean, msg: String, data: T?): PageResource<T> {
-            return PageResource(isRefresh, Status.NONNETWORK, data, msg)
-        }
-
-        fun <T> loading(isRefresh: Boolean, data: T?): PageResource<T> {
-            return PageResource(isRefresh, Status.LOADING, data, null)
-        }
-
-
-        fun <T> create(isRefresh: Boolean, resource: Resource<T>): PageResource<T> {
-            return PageResource(isRefresh, resource.status, resource.data, resource.message)
-        }
-    }
-
-}
-
+data class ListPageing<T>(
+    val list: Flow<T>,
+    val refresh: () -> Unit,
+    val loadData: () -> Unit,
+    val loadStatus: Flow<PageRes>,
+    val refreshStatus: Flow<PageRes>
+)
 
