@@ -172,7 +172,7 @@ Java版：[NetworkBoundResource](https://www.programcreek.com/java-api-examples/
 还有一个优点：liveData构建块用作协程和LiveData之间的结构化并发原语。当LiveData变为活动状态时，该代码块开始执行；当LiveData变为非活动状态时，该代码块在可配置的超时后自动取消。如果在完成之前将其取消，则如果LiveData再次变为活动状态，它将重新启动。如果它在先前的运行中成功完成，则不会重新启动。请注意，只有自动取消后，它才会重新启动。如果由于任何其他原因取消了该块(例如，引发CancelationException)，则不会重新启动它。
 
 # b、ADS
-在[Android Dev Summit (ADS) 2019 app](https://medium.com/androiddevelopers/lessons-learnt-using-coroutines-flow-4a6b285c0d06)中的最佳实践中又提出了一种应用程序体系结构，它遵循[Android应用架构指南](https://developer.android.google.cn/jetpack/docs/guide#recommended-app-arch)并添加了一个UserCases层，该层有助于分离关注点，使类保持小巧，集中，可重用和可测试：
+在[Android Dev Summit (ADS) 2019 app](https://medium.com/androiddevelopers/lessons-learnt-using-coroutines-flow-4a6b285c0d06)中的最佳实践中又提出了一种应用程序体系结构，它遵循[Android应用架构指南](https://developer.android.google.cn/jetpack/docs/guide#recommended-app-arch)并添加了一个UseCases层，该层有助于分离关注点，使类保持小巧，集中，可重用和可测试：
 
 ![data](./img/20191203153911627.png)
 
