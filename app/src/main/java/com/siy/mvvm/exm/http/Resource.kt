@@ -17,7 +17,7 @@
 package com.siy.mvvm.exm.http
 
 import androidx.lifecycle.LiveData
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.*
 
 /**
  * A generic class that holds a value with its loading status.
@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.Flow
 </T> */
 data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
     companion object {
+        fun <T> create(status: Status, data: T?, message: String?) = Resource(status, data, message)
+
         fun <T> success(data: T?): Resource<T> {
             return Resource(Status.SUCCESS, data, null)
         }
@@ -43,14 +45,38 @@ data class Resource<out T>(val status: Status, val data: T?, val message: String
     }
 }
 
+fun <T, F> Flow<Resource<T?>>.resMapFlow(transform: suspend (value: Flow<T>) -> Flow<F>) =
+    flow<Resource<F?>> {
+        collect { res ->
+            val data = res.data
+            val status = res.status
+            val message = res.message
+
+            if (data == null) {
+                emit(Resource.create(status, null, message))
+            } else {
+                emitAll(
+                    transform(
+                        flow {
+                            emit(data!!)
+                        }
+                    )
+                        .map {
+                            Resource.create(status, it, message)
+                        }
+                )
+            }
+        }
+    }
+
 data class PageRes(val status: PAGESTATUS, val message: String?) {
     companion object {
-        fun  create(status: PAGESTATUS, msg: String?) = PageRes(status, msg)
+        fun create(status: PAGESTATUS, msg: String?) = PageRes(status, msg)
 
-        fun  loading( msg: String?) = PageRes(PAGESTATUS.LOADING, msg)
-        fun  complete( msg: String?) = PageRes(PAGESTATUS.COMPLETE, msg)
-        fun  end( msg: String?) = PageRes(PAGESTATUS.END, msg)
-        fun  error( msg: String?) = PageRes(PAGESTATUS.ERROR, msg)
+        fun loading(msg: String?) = PageRes(PAGESTATUS.LOADING, msg)
+        fun complete(msg: String?) = PageRes(PAGESTATUS.COMPLETE, msg)
+        fun end(msg: String?) = PageRes(PAGESTATUS.END, msg)
+        fun error(msg: String?) = PageRes(PAGESTATUS.ERROR, msg)
     }
 }
 

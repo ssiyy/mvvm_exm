@@ -7,7 +7,6 @@ import com.siy.mvvm.exm.http.Resource
 import com.siy.mvvm.exm.utils.netAvailable
 import kotlinx.coroutines.flow.*
 
-
 fun <DbResultType, NetResultType> flowNetworkBoundResource(
     loadFromDb: () -> Flow<DbResultType>,
     fetch: suspend () -> NetResultType,
@@ -124,5 +123,6 @@ private class FlowNetworkBoundResource<ResultType, RequestType> @MainThread cons
             )
         }
     }
+
     fun asFlowData() = result
 }

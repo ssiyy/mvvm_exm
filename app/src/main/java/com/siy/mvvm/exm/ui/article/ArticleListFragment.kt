@@ -22,6 +22,8 @@ import com.siy.mvvm.exm.db.dao.ArticleDao
 import com.siy.mvvm.exm.db.dao.BannerDao
 import com.siy.mvvm.exm.http.GbdService
 import com.siy.mvvm.exm.http.PAGESTATUS
+import com.siy.mvvm.exm.http.Resource
+import com.siy.mvvm.exm.http.resMapFlow
 import com.siy.mvvm.exm.ui.Banner
 import com.siy.mvvm.exm.utils.dip2px
 import com.siy.mvvm.exm.utils.inflater
@@ -31,8 +33,11 @@ import com.siy.mvvm.exm.views.header.CommonHeader
 import com.siy.mvvm.exm.views.loopingviewpager.LoopViewPager
 import com.siy.mvvm.exm.views.search.AutoSearch
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import ru.ldralighieri.corbind.view.clicks
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -228,7 +233,15 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
 class ArticleListViewModel @Inject constructor(
     rep: ArticleListRep
 ) : ViewModel() {
-    val banners = rep.getBanners().asLiveData()
+    val banners = MutableLiveData<Resource<List<Banner>?>>()
+
+    init {
+        viewModelScope.launch {
+            rep.getBanners().collect {
+                banners.value = it
+            }
+        }
+    }
 
     /**
      * 搜索的关键字
@@ -295,7 +308,6 @@ class ArticleListRep @Inject constructor(
 
 ) {
 
-
     fun getBanners() = flowNetworkBoundResource(
         loadFromDb = bannerDao::queryAll,
         fetch = service::getBanner,
@@ -307,8 +319,24 @@ class ArticleListRep @Inject constructor(
                 }
             }
         }
-    )
-
+    ).resMapFlow { res ->
+        res.map {
+            it.toMutableList().apply {
+                add(
+                    Banner(
+                        -1,
+                        "Siy的csdn地址",
+                        "https://c-ssl.duitang.com/uploads/item/201702/10/20170210231605_a2HQT.thumb.700_0.png",
+                        1,
+                        1,
+                        "Siy",
+                        0,
+                        "https://blog.csdn.net/baidu_34012226"
+                    )
+                )
+            }.toList()
+        }
+    }
 
     fun getArtclesByPage(search: String) =
         loadFlowDataByPage(
