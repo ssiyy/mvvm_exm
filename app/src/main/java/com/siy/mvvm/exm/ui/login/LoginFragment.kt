@@ -31,7 +31,7 @@ class LoginFragment(
     }
 
     override fun initViewsAndEvents(view: View) {
-        mViewDataBinding?.viewModel = viewModel
+        mViewDataBinding.viewModel = viewModel
 
         viewModel.toastEvent.observe(viewLifecycleOwner, EventObserver {
             showToast(it)

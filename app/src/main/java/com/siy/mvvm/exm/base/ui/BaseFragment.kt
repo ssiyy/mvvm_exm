@@ -21,6 +21,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.views.sys.SystemDialog
+import kotlin.properties.Delegates
 
 
 /**
@@ -33,7 +34,8 @@ import com.siy.mvvm.exm.views.sys.SystemDialog
 abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
     protected lateinit var mContext: Context
 
-    protected var mViewDataBinding: T? = null
+    //这么写主要是为了不想用哪个?操作符
+    protected var mViewDataBinding: T by Delegates.notNull()
 
     private var mLoadingDialog: SystemDialog? = null
 
@@ -70,7 +72,11 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return getContentViewInternal(inflater, container)
     }
 
@@ -122,16 +128,28 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
         initViewsAndEvents(view)
     }
 
-    private fun getContentViewInternal(inflater: LayoutInflater, container: ViewGroup?) = if (layoutId != View.NO_ID) {
-        mViewDataBinding = DataBindingUtil.inflate(inflater,layoutId,container,false)
-        mViewDataBinding?.lifecycleOwner = this
-        mViewDataBinding?.root?:getContentView(inflater, container)
-    } else getContentView(inflater, container)
+    private fun getContentViewInternal(inflater: LayoutInflater, container: ViewGroup?) =
+        if (layoutId != View.NO_ID) {
+            mViewDataBinding = DataBindingUtil.inflate(inflater, layoutId, container, false)
+            mViewDataBinding.lifecycleOwner = this
+            mViewDataBinding.root
+        } else {
+            val view = getContentView(inflater, container)
+            try {
+                //因为view视图也是可以bind的，尝试bind一下，如果报错了就用view
+                mViewDataBinding = DataBindingUtil.bind(view)!!
+                mViewDataBinding.lifecycleOwner = this
+                mViewDataBinding.root
+            } catch (e: Exception) {
+                view
+            }
+        }
 
     /**
      * layoutId为View.NO_ID时用这个传递View
      */
-    protected open fun getContentView(inflater: LayoutInflater, container: ViewGroup?): View = FrameLayout(mContext)
+    protected open fun getContentView(inflater: LayoutInflater, container: ViewGroup?): View =
+        FrameLayout(mContext)
 
 }
 

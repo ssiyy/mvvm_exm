@@ -21,7 +21,7 @@ class ToResultFragment(override val layoutId: Int = R.layout.fragment_to_result)
     private var result = MutableLiveData<String>()
 
     override fun initViewsAndEvents(view: View) {
-        mViewDataBinding?.let {binding->
+        mViewDataBinding.let {binding->
             binding.result = result
 
             binding.click0 = fun(){

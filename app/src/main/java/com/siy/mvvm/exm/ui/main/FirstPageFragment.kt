@@ -10,7 +10,7 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_first_pag
     BaseLazyFragment<FragmentFirstPageBinding>() {
 
     override fun initViewsAndEvents(view: View) {
-        mViewDataBinding?.run {
+        mViewDataBinding.run {
 
             click0s = mapOf(
                 "toMainPage" to { navController.navigateAnimate(MainFragmentDirections.actionMainFragmentToArticleListFragment()) },

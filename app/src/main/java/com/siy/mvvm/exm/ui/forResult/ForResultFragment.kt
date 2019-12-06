@@ -23,7 +23,7 @@ class ForResultFragment(override val layoutId: Int = R.layout.fragment_for_resul
     private var inputStr = MutableLiveData<String>()
 
     override fun initViewsAndEvents(view: View) {
-        mViewDataBinding?.let { binding ->
+        mViewDataBinding.let { binding ->
             binding.lable = args.label
             binding.input = inputStr
             binding.click0 = fun() {

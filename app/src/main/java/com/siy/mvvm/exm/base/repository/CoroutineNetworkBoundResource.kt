@@ -128,7 +128,7 @@ private class CoroutineNetworkBoundResource<ResultType, RequestType> @MainThread
                     val dbResult = processResponse(response)
                     initialSource.dispose()
                     saveCallResult(dbResult)
-                    liveDataScope.emitSource(loadFromDb().map {
+                    liveDataScope.emitSource(dbSource.map {
                         Resource.success(it)
                     })
                 } else {
@@ -144,6 +144,7 @@ private class CoroutineNetworkBoundResource<ResultType, RequestType> @MainThread
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
+                onFetchFailed?.invoke(null)
                 liveDataScope.emitSource(dbSource.map {
                     Resource.error(e.message ?: "unknow error", it)
                 })

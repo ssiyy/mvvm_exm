@@ -90,7 +90,7 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
             setHeaderAndEmpty(true)
         }
 
-        mViewDataBinding?.run {
+        mViewDataBinding.run {
             header = object : CommonHeader() {
                 init {
                     title.value = "首页"
@@ -158,8 +158,8 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
         viewModel.refreshState.observe(viewLifecycleOwner) {
             when (it.status) {
                 PAGESTATUS.LOADING ->
-                    if (mViewDataBinding?.srlLayout?.isRefreshing == false) {
-                        mViewDataBinding?.srlLayout?.isRefreshing = true
+                    if (!mViewDataBinding.srlLayout.isRefreshing) {
+                        mViewDataBinding.srlLayout.isRefreshing = true
                     }
                 PAGESTATUS.ERROR, PAGESTATUS.COMPLETE -> {
                     stopRefresh()
@@ -173,8 +173,8 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
      * 停止刷新
      */
     private fun stopRefresh() {
-        if (mViewDataBinding?.srlLayout?.isRefreshing == true) {
-            mViewDataBinding?.srlLayout?.isRefreshing = false
+        if (mViewDataBinding.srlLayout.isRefreshing) {
+            mViewDataBinding.srlLayout.isRefreshing = false
         }
     }
 

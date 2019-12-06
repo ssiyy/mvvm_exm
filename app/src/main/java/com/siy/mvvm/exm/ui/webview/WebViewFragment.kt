@@ -55,25 +55,25 @@ class FixWebView : WebView {
                 webViewClient = object : WebViewClient() {
                     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                         super.onPageStarted(view, url, favicon)
-                        mViewDataBinding?.progressBar?.visibility = View.VISIBLE
+                        mViewDataBinding.progressBar?.visibility = View.VISIBLE
                     }
 
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
-                        mViewDataBinding?.progressBar?.visibility = View.GONE
+                        mViewDataBinding.progressBar?.visibility = View.GONE
                     }
                 }
 
                 webChromeClient = object : WebChromeClient() {
                     override fun onProgressChanged(view: WebView?, newProgress: Int) {
                         super.onProgressChanged(view, newProgress)
-                        mViewDataBinding?.progressBar?.progress = newProgress
+                        mViewDataBinding.progressBar.progress = newProgress
                     }
 
                     override fun onReceivedTitle(view: WebView?, title: String?) {
                         super.onReceivedTitle(view, title)
                         title?.let {
-                            mViewDataBinding?.header?.title?.value = it
+                            mViewDataBinding.header?.title?.value = it
                         }
                     }
                 }
@@ -83,7 +83,7 @@ class FixWebView : WebView {
         }
 
         override fun initViewsAndEvents(view: View) {
-            mViewDataBinding?.run {
+            mViewDataBinding.run {
                 header = object : CommonHeader() {
                     init {
                         title.value = "加载中..."
@@ -120,7 +120,7 @@ class FixWebView : WebView {
 
         override fun onDestroy() {
             super.onDestroy()
-            mViewDataBinding?.webViewRoot?.run {
+            mViewDataBinding.webViewRoot.run {
                 removeAllViews()
             }
             webView.run {

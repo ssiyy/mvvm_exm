@@ -63,13 +63,13 @@ class MainFragment(
 
             override fun getCount() = fragments.size
         }
-        mViewDataBinding?.viewPager?.let {
+        mViewDataBinding.viewPager?.let {
             it.offscreenPageLimit = 3
             it.adapter = adapter
         }
 
-        mViewDataBinding?.mainIndicator?.initPosition(MainIndicator.VG2_CODE) { code ->
-            val vp = mViewDataBinding?.viewPager
+        mViewDataBinding.mainIndicator?.initPosition(MainIndicator.VG2_CODE) { code ->
+            val vp = mViewDataBinding.viewPager
             when (code) {
                 MainIndicator.VG1_CODE -> vp?.currentItem = 0
                 MainIndicator.VG2_CODE -> vp?.currentItem = 1

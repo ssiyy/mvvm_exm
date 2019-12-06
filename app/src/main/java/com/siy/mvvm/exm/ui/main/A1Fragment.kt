@@ -8,7 +8,7 @@ import com.siy.mvvm.exm.databinding.FragmentIvBinding
 class A1Fragment(override val layoutId: Int = R.layout.fragment_iv) :
     BaseLazyFragment<FragmentIvBinding>() {
     override fun initViewsAndEvents(view: View) {
-        mViewDataBinding?.run {
+        mViewDataBinding.run {
             resId = R.drawable.a1
         }
     }
