@@ -135,7 +135,14 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
             getContentView(inflater, container)
         }
 
-        val dataBinding = DataBindingUtil.findBinding<T>(view)
+        val dataBinding = try {
+            DataBindingUtil.bind<T>(view)
+        } catch (e: Exception) {
+            null
+        } catch (e: Throwable) {
+            throw e
+        }
+
         return if (dataBinding != null) {
             dataBinding.lifecycleOwner = this
             mViewDataBinding = dataBinding
