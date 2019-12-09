@@ -128,22 +128,22 @@ abstract class BaseFragment<T : ViewDataBinding> : Fragment() {
         initViewsAndEvents(view)
     }
 
-    private fun getContentViewInternal(inflater: LayoutInflater, container: ViewGroup?) =
-        if (layoutId != View.NO_ID) {
-            mViewDataBinding = DataBindingUtil.inflate(inflater, layoutId, container, false)
-            mViewDataBinding.lifecycleOwner = this
+    private fun getContentViewInternal(inflater: LayoutInflater, container: ViewGroup?): View {
+        val view = if (layoutId != View.NO_ID) {
+            inflater.inflate(layoutId, container, false)
+        } else {
+            getContentView(inflater, container)
+        }
+
+        val dataBinding = DataBindingUtil.findBinding<T>(view)
+        return if (dataBinding != null) {
+            dataBinding.lifecycleOwner = this
+            mViewDataBinding = dataBinding
             mViewDataBinding.root
         } else {
-            val view = getContentView(inflater, container)
-            try {
-                //因为view视图也是可以bind的，尝试bind一下，如果报错了就用view
-                mViewDataBinding = DataBindingUtil.bind(view)!!
-                mViewDataBinding.lifecycleOwner = this
-                mViewDataBinding.root
-            } catch (e: Exception) {
-                view
-            }
+            view
         }
+    }
 
     /**
      * layoutId为View.NO_ID时用这个传递View
