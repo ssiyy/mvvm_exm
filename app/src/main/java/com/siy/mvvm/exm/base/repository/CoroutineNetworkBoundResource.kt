@@ -33,7 +33,7 @@ fun <DbResultType, NetResultType> networkBoundResource(
     loadFromDb: () -> LiveData<DbResultType>,
     fetch: suspend () -> NetResultType,
     saveCallResult: suspend (DbResultType?) -> Unit,
-    processResponse:  (NetResultType) -> DbResultType? = {
+    processResponse: (NetResultType) -> DbResultType? = {
         if (it is BaseBean<*>) {
             @Suppress("UNCHECKED_CAST")
             it.data as DbResultType
@@ -70,7 +70,7 @@ private class CoroutineNetworkBoundResource<ResultType, RequestType> @MainThread
     private val shouldFetch: (ResultType) -> Boolean = { true },
     private val loadFromDb: () -> LiveData<ResultType>,
     private val fetch: suspend () -> RequestType,
-    private val processResponse:  (RequestType) -> ResultType? = {
+    private val processResponse: (RequestType) -> ResultType? = {
         if (it is BaseBean<*>) {
             @Suppress("UNCHECKED_CAST")
             it.data as ResultType
@@ -159,19 +159,19 @@ private class CoroutineNetworkBoundResource<ResultType, RequestType> @MainThread
     }
 
     fun asLiveData() = result
+}
 
-    private suspend fun <T> LiveData<T>.await() = withContext(Dispatchers.Main) {
-        val receivedValue = CompletableDeferred<T?>()
-        val observer = Observer<T> {
-            if (receivedValue.isActive) {
-                receivedValue.complete(it)
-            }
+suspend fun <T> LiveData<T>.await() = withContext(Dispatchers.Main) {
+    val receivedValue = CompletableDeferred<T?>()
+    val observer = Observer<T> {
+        if (receivedValue.isActive) {
+            receivedValue.complete(it)
         }
-        try {
-            observeForever(observer)
-            return@withContext receivedValue.await()
-        } finally {
-            removeObserver(observer)
-        }
+    }
+    try {
+        observeForever(observer)
+        return@withContext receivedValue.await()
+    } finally {
+        removeObserver(observer)
     }
 }

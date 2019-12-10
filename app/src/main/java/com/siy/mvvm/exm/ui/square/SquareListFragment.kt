@@ -78,7 +78,7 @@ class SquareListFragment(override val layoutId: Int = R.layout.fragment_article_
 
     private fun setUpObserver(adapter: SquareListAdapter) {
         viewModel.articleList.observe(viewLifecycleOwner) {
-            adapter.asyncSetDisffData(it, lifecycleScope)
+            adapter.asyncDisffData(it, lifecycleScope)
         }
 
         viewModel.loadState.observe(viewLifecycleOwner) {

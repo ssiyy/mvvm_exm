@@ -4,10 +4,7 @@ import androidx.lifecycle.*
 import com.siy.mvvm.exm.http.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 
 typealias PageIndex = Int
 typealias IsRefresh = Boolean
@@ -92,7 +89,19 @@ fun <DbResultType, NetResultType, ReqNetParam> loadDataByPage(
         }
 
     val listLiveData = MediatorLiveData<DbResultType?>()
-    listLiveData.addSource(orgDataLiveData) {
+    listLiveData.addSource(orgDataLiveData.switchMap {
+        liveData {
+            if (it.status == Status.LOADING && it.data == null) {
+                //当loading的data为null时去数据找一下
+                val dbValue = loadFromDb().await()
+                Resource.create(it.status, dbValue, it.message)
+            } else {
+                it
+            }.let {
+                emit(it)
+            }
+        }
+    }) {
         when (it.status) {
             Status.LOADING -> {
                 listLiveData.value = it.data
@@ -226,6 +235,14 @@ fun <DbResultType, NetResultType, ReqNetParam> loadFlowDataByPage(
                 },
                 processResponse = net2DbResultConvert
             )
+        }.map{
+            if (it.status == Status.LOADING && it.data == null) {
+                //当loading的data为null时去数据找一下
+                val dbValue = loadFromDb().first()
+                Resource.create(it.status, dbValue, it.message)
+            } else {
+                it
+            }
         }.map {
             when (it.status) {
                 Status.LOADING -> {
