@@ -1,4 +1,4 @@
-@file:JvmName("GbdUtils")
+@file:JvmName("Utils")
 @file:JvmMultifileClass
 
 package com.siy.mvvm.exm.utils
@@ -9,8 +9,8 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import com.siy.mvvm.exm.views.ScrollChildSwipeRefreshLayout
 import com.siy.mvvm.exm.R
+import com.siy.mvvm.exm.views.ScrollChildSwipeRefreshLayout
 import io.reactivex.functions.Consumer
 import timber.log.Timber
 
@@ -21,6 +21,11 @@ import timber.log.Timber
  * @author Siy
  */
 
+val ColorSchemeColors = intArrayOf(
+    Color.parseColor("#4cd964"),
+    Color.parseColor("#4cd964"),
+    Color.parseColor("#4cd964")
+)
 
 /**
  * 设置SwipeRefreshLayout
@@ -29,10 +34,7 @@ fun setupRefreshLayout(
     refreshLayout: ScrollChildSwipeRefreshLayout,
     scrollUpChild: View? = null
 ) {
-    refreshLayout.setColorSchemeColors(
-        Color.parseColor("#4cd964"), Color.parseColor("#4cd964"),
-        Color.parseColor("#4cd964")
-    )
+    refreshLayout.setColorSchemeColors(*ColorSchemeColors)
 
     scrollUpChild?.let {
         refreshLayout.scrollUpChild = it
@@ -41,7 +43,8 @@ fun setupRefreshLayout(
 
 val GDB_ERROR = Consumer<Throwable> { Timber.e(it.detailMsg) }
 
-fun <T> prefGbd(default: T, mode: Preference.MODE = Preference.MODE.STROGE_SP) = Preference(default, mode = mode)
+fun <T> prefGbd(default: T, mode: Preference.MODE = Preference.MODE.STROGE_SP) =
+    Preference(default, mode = mode)
 
 fun getEmptyPromptView(context: Context, promptMsg: String): View {
     val view = LayoutInflater.from(context).inflate(R.layout.feed_empty_view, null)

@@ -27,7 +27,6 @@ import com.siy.mvvm.exm.http.resMapFlow
 import com.siy.mvvm.exm.ui.Banner
 import com.siy.mvvm.exm.utils.dip2px
 import com.siy.mvvm.exm.utils.inflater
-import com.siy.mvvm.exm.utils.setupRefreshLayout
 import com.siy.mvvm.exm.utils.throttleFist
 import com.siy.mvvm.exm.views.header.CommonHeader
 import com.siy.mvvm.exm.views.loopingviewpager.LoopViewPager
@@ -127,7 +126,6 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
                         }
             )
             adapter = artAdapter
-            setupRefreshLayout(srlLayout, recyclerView)
         }
         setUpObserver(artAdapter, headerView)
     }

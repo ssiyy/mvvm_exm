@@ -26,7 +26,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.siy.mvvm.exm.R;
-import com.siy.mvvm.exm.utils.GbdUtils;
+import com.siy.mvvm.exm.utils.Utils;
 
 import java.lang.reflect.Field;
 
@@ -245,9 +245,9 @@ public class SystemDialog extends DialogFragment {
             if (width == 0) {
                 //如果宽度等于0就用默认的
                 //设置宽度
-                attrs.width = GbdUtils.getDeviceSize(context)[0];
+                attrs.width = Utils.getDeviceSize(context)[0];
                 //左右间隔
-                attrs.width = (attrs.width - GbdUtils.dip2px(context, 36) * 2);
+                attrs.width = (attrs.width - Utils.dip2px(context, 36) * 2);
             } else {
                 attrs.width = width;
             }
