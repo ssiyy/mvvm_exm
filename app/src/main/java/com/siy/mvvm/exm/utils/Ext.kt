@@ -1,4 +1,4 @@
-@file:JvmName("GbdUtils")
+@file:JvmName("Utils")
 @file:JvmMultifileClass
 
 package com.siy.mvvm.exm.utils

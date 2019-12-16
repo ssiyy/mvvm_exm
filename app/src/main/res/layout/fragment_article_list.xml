@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="com.siy.mvvm.exm.utils.GbdUtils" />
+        <import type="com.siy.mvvm.exm.utils.Utils" />
 
         <import type="com.siy.mvvm.exm.views.header.CommonHeader" />
 
@@ -69,6 +69,7 @@
             android:id="@+id/srl_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            bind:colorSchemeColors="@{Utils.colorSchemeColors}"
             bind:onRefreshListener="@{()->click0s.onRefresh.invoke()}"
             bind:progressBackgroundColorSchemeResource="@{R.color.white}">
 
@@ -77,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adapter="@{adapter}"
-                android:emptyView="@{GbdUtils.getEmptyPromptView(context,@string/no_more_data)}"
+                android:emptyView="@{Utils.getEmptyPromptView(context,@string/no_more_data)}"
                 android:loadMoreEnable="@{true}"
                 android:onItemClick="@{(a,b,c)->click1s.onItemClick.invoke(c)}"
                 android:onLoadMore="@{()->click0s.onLoadMore.invoke()}"
