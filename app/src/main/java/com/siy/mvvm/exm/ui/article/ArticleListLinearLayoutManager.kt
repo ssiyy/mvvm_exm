@@ -64,21 +64,21 @@ class ArticleListLinearLayoutManager : LinearLayoutManager {
         super.onLayoutChildren(recycler, state)
 
         //下面是一些调试信息
-        Log.e(
+        Log.d(
             "siy",
             "saveState:${refectValue<SavedState>(
                 "mPendingSavedState",
                 LinearLayoutManager::class.java
             )?.showMsg()}"
         )
-        Log.e(
+        Log.d(
             "siy",
             "mPendingScrollPosition:${refectValue<Int>(
                 "mPendingScrollPosition",
                 LinearLayoutManager::class.java
             )}"
         )
-        Log.e(
+        Log.d(
             "siy",
             "mAnchorInfo:${refectValue<Any>("mAnchorInfo", LinearLayoutManager::class.java)}"
         )
@@ -94,7 +94,7 @@ class ArticleListLinearLayoutManager : LinearLayoutManager {
                 mPendingVpPosition = RecyclerView.NO_POSITION
             }
         }
-        Log.e("siy", "onLayoutCompleted")
+        Log.d("siy", "onLayoutCompleted")
     }
 
 

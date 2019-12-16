@@ -1,5 +1,6 @@
 package com.siy.mvvm.exm.ui.article
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -20,10 +21,8 @@ import com.siy.mvvm.exm.base.ui.navigateAnimate
 import com.siy.mvvm.exm.databinding.FragmentArticleListBinding
 import com.siy.mvvm.exm.db.dao.ArticleDao
 import com.siy.mvvm.exm.db.dao.BannerDao
-import com.siy.mvvm.exm.http.GbdService
-import com.siy.mvvm.exm.http.PAGESTATUS
-import com.siy.mvvm.exm.http.Resource
-import com.siy.mvvm.exm.http.resMapFlow
+import com.siy.mvvm.exm.http.*
+import com.siy.mvvm.exm.ui.Article
 import com.siy.mvvm.exm.ui.Banner
 import com.siy.mvvm.exm.utils.dip2px
 import com.siy.mvvm.exm.utils.inflater
@@ -32,11 +31,10 @@ import com.siy.mvvm.exm.views.header.CommonHeader
 import com.siy.mvvm.exm.views.loopingviewpager.LoopViewPager
 import com.siy.mvvm.exm.views.search.AutoSearch
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import ru.ldralighieri.corbind.view.clicks
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -233,66 +231,112 @@ class ArticleListViewModel @Inject constructor(
 ) : ViewModel() {
     val banners = MutableLiveData<Resource<List<Banner>?>>()
 
-    init {
-        viewModelScope.launch {
-            rep.getBanners().collect {
-                banners.value = it
-            }
-        }
-    }
-
     /**
      * 搜索的关键字
      */
-    private val _searchStr = MutableLiveData<String>()
+    private val _searchStr = ConflatedBroadcastChannel<String>()
     val searchStr: LiveData<String>
-        get() = _searchStr
+        get() = MutableLiveData<String>()//_searchStr.asFlow().asLiveData()
 
-    private val articleResult = _searchStr.map {
+    private val articleResult = _searchStr.asFlow().map {
+        Log.e("debug", "-------------------------------------------")
         rep.getArtclesByPage(it)
     }
+
 
     /**
      * 列表
      */
-    val articleList = articleResult.switchMap {
-        it.list.asLiveData()
-    }
+    val articleList = MutableLiveData<List<Article>>()
 
 
     /**
      * 加载状态
      */
-    val loadState = articleResult.switchMap {
-        it.loadStatus.asLiveData()
-    }
+    val loadState = MutableLiveData<PageRes>()
+
 
     /**
      * 刷新状态
      */
-    val refreshState = articleResult.switchMap {
-        it.refreshStatus.asLiveData()
-    }
+    val refreshState = MutableLiveData<PageRes>()
+
 
     /**
      * 加载更多方法
      */
     fun loadMore() {
-        articleResult.value?.loadData?.invoke()
+        loadMore?.invoke()
+
     }
+
+    var loadMore: (() -> Unit)? = null
+    var refresh: (() -> Unit)? = null
 
     /**
      * 刷新方法
      */
     fun refresh() {
-        articleResult.value?.refresh?.invoke()
+        refresh?.invoke()
+    }
+
+
+    init {
+        viewModelScope.launch {
+            supervisorScope {
+
+                launch {
+                    rep.getBanners().collect {
+                        banners.value = it
+                    }
+                }
+
+                launch {
+                    articleResult.collect { pageing ->
+                        refresh = pageing.refresh
+                        loadMore = pageing.loadData
+                        list(pageing.list)
+                        loadState(pageing.loadStatus)
+                        refreshState(pageing.refreshStatus)
+                    }
+                }
+            }
+
+        }
+    }
+
+    private fun list(listFlow: Flow<List<Article>?>) {
+        viewModelScope.launch {
+            listFlow.collect {
+                articleList.value = it
+            }
+        }
+    }
+
+    private fun loadState(load: Flow<PageRes>) {
+        viewModelScope.launch {
+            load.collect {
+                loadState.value = it
+            }
+        }
+    }
+
+    private fun refreshState(refresh: Flow<PageRes>) {
+        viewModelScope.launch {
+            refresh.collect {
+                refreshState.value = it
+            }
+        }
     }
 
     fun showArctiles(str: String): Boolean {
-        if (_searchStr.value == str) {
+        val alreadyValue = _searchStr.valueOrNull
+        if (str == alreadyValue) {
             return false
         }
-        _searchStr.value = str
+        if (!_searchStr.isClosedForSend) {
+            _searchStr.offer(str)
+        }
         return true
     }
 }
