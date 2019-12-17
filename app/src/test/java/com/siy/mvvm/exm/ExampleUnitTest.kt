@@ -1,11 +1,13 @@
 package com.siy.mvvm.exm
 
+import com.siy.mvvm.exm.http.PageRes
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.asPublisher
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.concurrent.thread
@@ -17,65 +19,300 @@ import kotlin.concurrent.thread
  */
 class ExampleUnitTest {
 
-    fun requestFlow(i: Int): Flow<String> = flow {
-        emit("$i: First")
-        delay(99) // wait 500 ms
-        emit("$i: Second")
-    }
-
-    class T(
-        val msg: String,
-        val flow: Flow<String>,
-        val run: () -> Unit
+    data class ListPageing<T>(
+        val list: Flow<T>,
+        val refresh: () -> Unit,
+        val loadData: () -> Unit,
+        val loadStatus: Flow<PageRes>,
+        val refreshStatus: Flow<PageRes>
     )
 
+    private fun getlistPage(): ListPageing<String> {
+        //加载更多的状态,用来标识是否还可以加载更多，只有END才不可以加载更多
+        val loadStatus = ConflatedBroadcastChannel<PageRes>()
 
-    suspend fun testRun(): T {
-        var i = 1
-        var str = "ce,shi"
-        val dfe = ConflatedBroadcastChannel<String>()
 
-        val lamda = {
-            str = "ce,shi：${i++}"
-            if (!dfe.isClosedForSend) {
-                dfe.offer(str)
-            }
+        //刷新的状态
+        val refreshStatus = ConflatedBroadcastChannel<PageRes>()
+
+
+        val pageChannel = ConflatedBroadcastChannel<Int>()
+        val listFlow = pageChannel.asFlow().map {
+            "测试一下而已$it"
+        }
+
+
+        val refreshs = {
+            refreshStatus.offer(PageRes.complete("测试一下refreshs"))
             Unit
         }
-        return T(msg = "测试", run = lamda,flow = dfe.asFlow())
+
+        val load = {
+            loadStatus.offer(PageRes.complete("测试一下load"))
+            Unit
+        }
+
+        {
+            pageChannel.offer(1)
+        }()
+
+        return ListPageing(
+            refresh = refreshs,
+            loadData = load,
+            loadStatus = loadStatus.asFlow(),
+            list = listFlow,
+            refreshStatus = refreshStatus.asFlow()
+        )
+
+    }
+
+    private fun <T> flow(flow: Flow<T>) = GlobalScope.launch {
+        flow.collect {
+            println("refreshStatus:$it")
+        }
     }
 
     @Test
-    fun testFlow() = runBlocking<Unit> {
-        val abc = ConflatedBroadcastChannel<Int>()
-        val t = abc.asFlow().map {
-            testRun()
-        }
-        abc.offer(1)
-        var runner: (() -> Unit)? = null
-        launch {
-            t.collect {
-                println(it.msg)
-                runner = it.run
-            }
-            println("试试嘿嘿")
+    fun testFlow() = runBlocking {
+        val search = ConflatedBroadcastChannel<Int>()
+
+        val result = search.asFlow().map {
+            println("-------------------------")
+            getlistPage()
         }
 
-        launch {
-            t.flatMapMerge {
-                it.flow.asPublisher().asFlow()
-            }.collect{
-                println("aa")
+        var refresh: (() -> Unit)? = null
+
+        val job = GlobalScope.launch {
+            result.collect { pageing ->
+                refresh = pageing.refresh
+                flow(pageing.refreshStatus)
+                flow(pageing.list)
             }
         }
 
         thread {
-            while (true){
-                runner?.invoke()
+            while (true) {
                 Thread.sleep(1000)
+                refresh?.invoke()
             }
         }
 
+        search.offer(1)
+        job.join()
+        println("end")
+    }
+
+}
+package com.siy.mvvm.exm
+
+import com.siy.mvvm.exm.http.PageRes
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.junit.Test
+import kotlin.concurrent.thread
+
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+class ExampleUnitTest {
+
+    data class ListPageing<T>(
+        val list: Flow<T>,
+        val refresh: () -> Unit,
+        val loadData: () -> Unit,
+        val loadStatus: Flow<PageRes>,
+        val refreshStatus: Flow<PageRes>
+    )
+
+    private fun getlistPage(): ListPageing<String> {
+        //加载更多的状态,用来标识是否还可以加载更多，只有END才不可以加载更多
+        val loadStatus = ConflatedBroadcastChannel<PageRes>()
+
+
+        //刷新的状态
+        val refreshStatus = ConflatedBroadcastChannel<PageRes>()
+
+
+        val pageChannel = ConflatedBroadcastChannel<Int>()
+        val listFlow = pageChannel.asFlow().map {
+            "测试一下而已$it"
+        }
+
+
+        val refreshs = {
+            refreshStatus.offer(PageRes.complete("测试一下refreshs"))
+            Unit
+        }
+
+        val load = {
+            loadStatus.offer(PageRes.complete("测试一下load"))
+            Unit
+        }
+
+        {
+            pageChannel.offer(1)
+        }()
+
+        return ListPageing(
+            refresh = refreshs,
+            loadData = load,
+            loadStatus = loadStatus.asFlow(),
+            list = listFlow,
+            refreshStatus = refreshStatus.asFlow()
+        )
+
+    }
+
+    private fun <T> flow(flow: Flow<T>) = GlobalScope.launch {
+        flow.collect {
+            println("refreshStatus:$it")
+        }
+    }
+
+    @Test
+    fun testFlow() = runBlocking {
+        val search = ConflatedBroadcastChannel<Int>()
+
+        val result = search.asFlow().map {
+            println("-------------------------")
+            getlistPage()
+        }
+
+        var refresh: (() -> Unit)? = null
+
+        val job = GlobalScope.launch {
+            result.collect { pageing ->
+                refresh = pageing.refresh
+                flow(pageing.refreshStatus)
+                flow(pageing.list)
+            }
+        }
+
+        thread {
+            while (true) {
+                Thread.sleep(1000)
+                refresh?.invoke()
+            }
+        }
+
+        search.offer(1)
+        job.join()
+        println("end")
+    }
+
+}
+package com.siy.mvvm.exm
+
+import com.siy.mvvm.exm.http.PageRes
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.junit.Test
+import kotlin.concurrent.thread
+
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+class ExampleUnitTest {
+
+    data class ListPageing<T>(
+        val list: Flow<T>,
+        val refresh: () -> Unit,
+        val loadData: () -> Unit,
+        val loadStatus: Flow<PageRes>,
+        val refreshStatus: Flow<PageRes>
+    )
+
+    private fun getlistPage(): ListPageing<String> {
+        //加载更多的状态,用来标识是否还可以加载更多，只有END才不可以加载更多
+        val loadStatus = ConflatedBroadcastChannel<PageRes>()
+
+
+        //刷新的状态
+        val refreshStatus = ConflatedBroadcastChannel<PageRes>()
+
+
+        val pageChannel = ConflatedBroadcastChannel<Int>()
+        val listFlow = pageChannel.asFlow().map {
+            "测试一下而已$it"
+        }
+
+
+        val refreshs = {
+            refreshStatus.offer(PageRes.complete("测试一下refreshs"))
+            Unit
+        }
+
+        val load = {
+            loadStatus.offer(PageRes.complete("测试一下load"))
+            Unit
+        }
+
+        {
+            pageChannel.offer(1)
+        }()
+
+        return ListPageing(
+            refresh = refreshs,
+            loadData = load,
+            loadStatus = loadStatus.asFlow(),
+            list = listFlow,
+            refreshStatus = refreshStatus.asFlow()
+        )
+
+    }
+
+    private fun <T> flow(flow: Flow<T>) = GlobalScope.launch {
+        flow.collect {
+            println("refreshStatus:$it")
+        }
+    }
+
+    @Test
+    fun testFlow() = runBlocking {
+        val search = ConflatedBroadcastChannel<Int>()
+
+        val result = search.asFlow().map {
+            println("-------------------------")
+            getlistPage()
+        }
+
+        var refresh: (() -> Unit)? = null
+
+        val job = GlobalScope.launch {
+            result.collect { pageing ->
+                refresh = pageing.refresh
+                flow(pageing.refreshStatus)
+                flow(pageing.list)
+            }
+        }
+
+        thread {
+            while (true) {
+                Thread.sleep(1000)
+                refresh?.invoke()
+            }
+        }
+
+        search.offer(1)
+        job.join()
+        println("end")
     }
 
 }
