@@ -23,21 +23,95 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_first_pag
             )
 
 
-            test.filters = arrayOf(*(test.filters),DigitsInputFilter.signDecimalFilter())
+            test.filters = arrayOf(*(test.filters), AccuracyFilter(500.0, 2))
 
         }
     }
 }
 
+class AccuracyFilter(private val _maxNum: Double, private val accuracy: Int) :
+    DigitsInputFilter(false, accuracy > 0) {
 
-class DigitsInputFilter(private val mSign: Boolean, private val mDecimal: Boolean) :
+    private val maxNum: Double
+        get() {
+            return if (_maxNum < 0) {
+                0.0
+            } else {
+                _maxNum
+            }
+        }
+
+    override fun filter(
+        source: CharSequence,
+        start: Int,
+        end: Int,
+        dest: Spanned,
+        dstart: Int,
+        dend: Int
+    ): CharSequence? {
+        val out = super.filter(source, start, end, dest, dstart, dend)
+        var innerSource = source
+        var innerStart = start
+        var innerEnd = end
+
+        if (out != null) {
+            innerSource = out
+            innerStart = 0
+            innerEnd = out.length
+        }
+
+        log(innerSource, innerStart, innerEnd, dest, dstart, dend)
+
+        val afterStr = if (innerSource.isEmpty()) {
+            //是删除操作
+            dest.replaceRange(dstart, dend, "")
+        } else {
+            //添加操作
+            dest.insertAt(dstart, innerSource.subSequence(innerStart, innerEnd))
+        }
+
+
+        //判断一下小数位的精度
+        val decimalPointIndex = afterStr.indexOf(mDecimalPointChars)
+        if (decimalPointIndex != -1) {
+            val innerAccuracy = afterStr.length-1 - decimalPointIndex
+            if (innerAccuracy > accuracy) {
+                return ""
+            }
+        }
+
+        val result = try {
+            afterStr.toString().toDouble()
+        } catch (e: Exception) {
+            0.0
+        }
+
+        val innerMaxNum = if (accuracy == 0) {
+            maxNum.toInt().toDouble()//把小数位截掉
+        } else {
+            maxNum
+        }
+
+        if (result > innerMaxNum) {
+            return ""
+        }
+
+        return null
+    }
+}
+
+
+open class DigitsInputFilter constructor(
+    private val mSign: Boolean,
+    private val mDecimal: Boolean
+) :
     NumberInputFilter() {
 
     override val acceptedChars: CharArray =
         COMPATIBILITY_CHARACTERS[(if (mSign) SIGN else 0) or (if (mDecimal) DECIMAL else 0)]
 
-    private val mDecimalPointChars: String = DEFAULT_DECIMAL_POINT_CHARS
-    private val mSignChars = DEFAULT_SIGN_CHARS
+    protected val mDecimalPointChars: String = DEFAULT_DECIMAL_POINT_CHARS
+    protected val mSignChars = DEFAULT_SIGN_CHARS
 
     companion object {
         private val COMPATIBILITY_CHARACTERS = arrayOf(
@@ -57,7 +131,7 @@ class DigitsInputFilter(private val mSign: Boolean, private val mDecimal: Boolea
 
         fun decimalFilter() = DigitsInputFilter(mSign = false, mDecimal = true)
 
-        fun signDecimalFilter()=DigitsInputFilter(mSign = true,mDecimal = true)
+        fun signDecimalFilter() = DigitsInputFilter(mSign = true, mDecimal = true)
 
     }
 
@@ -156,6 +230,13 @@ class DigitsInputFilter(private val mSign: Boolean, private val mDecimal: Boolea
 
 }
 
+fun CharSequence.insertAt(index: Int, str: CharSequence): CharSequence {
+    if (index < 0 || index > length) {
+        throw StringIndexOutOfBoundsException()
+    }
+
+    return "${subSequence(0, index)}$str${substring(index, length)}"
+}
 
 abstract class NumberInputFilter : InputFilter {
 
@@ -164,7 +245,7 @@ abstract class NumberInputFilter : InputFilter {
      */
     protected abstract val acceptedChars: CharArray
 
-    private fun log(
+    protected fun log(
         source: CharSequence?,
         start: Int,
         end: Int,
@@ -172,14 +253,6 @@ abstract class NumberInputFilter : InputFilter {
         dstart: Int,
         dend: Int
     ) {
-        fun CharSequence.insertAt(index: Int, str: CharSequence): CharSequence {
-            if (index < 0 || index > length) {
-                throw StringIndexOutOfBoundsException()
-            }
-
-            return "${subSequence(0, index)}$str${substring(index, length)}"
-        }
-
 
         Timber.e("source:$source,start:$start,end:$end,dest:$dest,dstart:$dstart,dend:$dend")
         val afterStr = if (source.isNullOrEmpty()) {
