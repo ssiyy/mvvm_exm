@@ -9,7 +9,6 @@ import com.siy.mvvm.exm.base.ui.BaseLazyFragment
 import com.siy.mvvm.exm.base.ui.navigateAnimate
 import com.siy.mvvm.exm.databinding.FragmentFirstPageBinding
 import timber.log.Timber
-import java.util.regex.Pattern
 
 class FirstPageFragment(override val layoutId: Int = R.layout.fragment_first_page) :
     BaseLazyFragment<FragmentFirstPageBinding>() {
@@ -24,33 +23,175 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_first_pag
             )
 
 
-            test.filters = arrayOf(MaxNumInputFilter())
+            test.filters = arrayOf(*(test.filters),DigitsInputFilter.signDecimalFilter())
 
         }
     }
 }
 
 
-/**
- * 设置这个表示只允许输入数据类型（0123456789.+-）
- */
-class MaxNumInputFilter : InputFilter {
+class DigitsInputFilter(private val mSign: Boolean, private val mDecimal: Boolean) :
+    NumberInputFilter() {
 
+    override val acceptedChars: CharArray =
+        COMPATIBILITY_CHARACTERS[(if (mSign) SIGN else 0) or (if (mDecimal) DECIMAL else 0)]
 
-    private val CHARACTERS =
-        charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '.')
+    private val mDecimalPointChars: String = DEFAULT_DECIMAL_POINT_CHARS
+    private val mSignChars = DEFAULT_SIGN_CHARS
 
-    val floatingPattern = Pattern.compile("^([-+])?\\d+(\\.\\d+)?\$")
+    companion object {
+        private val COMPATIBILITY_CHARACTERS = arrayOf(
+            charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'),
+            charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+'),
+            charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'),
+            charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '+', '.')
+        )
 
-    private fun ok(accept: CharArray, c: Char): Boolean {
-        for (i in accept.indices.reversed()) {
-            if (accept[i] == c) {
-                return true
-            }
-        }
-        return false
+        private const val DEFAULT_DECIMAL_POINT_CHARS = "."
+        private const val DEFAULT_SIGN_CHARS = "-+"
+
+        private const val SIGN = 1
+        private const val DECIMAL = 2
+
+        fun signlFilter() = DigitsInputFilter(mSign = true, mDecimal = false)
+
+        fun decimalFilter() = DigitsInputFilter(mSign = false, mDecimal = true)
+
+        fun signDecimalFilter()=DigitsInputFilter(mSign = true,mDecimal = true)
+
     }
 
+
+    private fun isSignChar(c: Char): Boolean {
+        return mSignChars.indexOf(c) != -1
+    }
+
+    private fun isDecimalPointChar(c: Char): Boolean {
+        return mDecimalPointChars.indexOf(c) != -1
+    }
+
+
+    override fun filter(
+        source: CharSequence,
+        start: Int,
+        end: Int,
+        dest: Spanned,
+        dstart: Int,
+        dend: Int
+    ): CharSequence? {
+        val out = super.filter(source, start, end, dest, dstart, dend)
+
+        if (!mSign && !mDecimal) {
+            return out
+        }
+
+        var innerSource = source
+        var innerStart = start
+        var innerEnd = end
+
+        if (out != null) {
+            innerSource = out
+            innerStart = 0
+            innerEnd = out.length
+        }
+
+        var sign = -1
+        var decimal = -1
+        val dlen = dest.length
+
+        //找出现有文本是否带有符号或小数点字符。
+        for (i in 0 until dstart) {
+            val c = dest[i]
+            if (isSignChar(c)) {
+                sign = i
+            } else if (isDecimalPointChar(c)) {
+                decimal = i
+            }
+        }
+
+        for (i in dend until dlen) {
+            val c = dest[i]
+            if (isSignChar(c)) {
+                return "" // 请勿在符号字符前插入任何内容。
+            } else if (isDecimalPointChar(c)) {
+                decimal = i
+            }
+        }
+
+        //如果是这样，我们必须从源中删除它们。此外，符号字符必须是第一个字符，
+        // 并且在现有符号字符之前不能插入任何内容。按相反的顺序进行操作，以使偏移量稳定。
+        var stripped: SpannableStringBuilder? = null
+
+        for (i in innerEnd - 1 downTo innerStart) {
+            val c = innerSource[i]
+            var strip = false
+            if (isSignChar(c)) {
+                if (i != innerStart || dstart != 0) {
+                    strip = true
+                } else if (sign >= 0) {
+                    strip = true
+                } else {
+                    sign = i
+                }
+            } else if (isDecimalPointChar(c)) {
+                if (decimal >= 0) {
+                    strip = true
+                } else {
+                    decimal = i
+                }
+            }
+            if (strip) {
+                if (innerEnd == innerStart + 1) {
+                    return "" // Only one character, and it was stripped.
+                }
+                if (stripped == null) {
+                    stripped = SpannableStringBuilder(innerSource, innerStart, innerEnd)
+                }
+                stripped.delete(i - innerStart, i + 1 - innerStart)
+            }
+        }
+
+        return stripped ?: out
+    }
+
+}
+
+
+abstract class NumberInputFilter : InputFilter {
+
+    /**
+     * 可接受字符
+     */
+    protected abstract val acceptedChars: CharArray
+
+    private fun log(
+        source: CharSequence?,
+        start: Int,
+        end: Int,
+        dest: Spanned?,
+        dstart: Int,
+        dend: Int
+    ) {
+        fun CharSequence.insertAt(index: Int, str: CharSequence): CharSequence {
+            if (index < 0 || index > length) {
+                throw StringIndexOutOfBoundsException()
+            }
+
+            return "${subSequence(0, index)}$str${substring(index, length)}"
+        }
+
+
+        Timber.e("source:$source,start:$start,end:$end,dest:$dest,dstart:$dstart,dend:$dend")
+        val afterStr = if (source.isNullOrEmpty()) {
+            //是删除操作
+            dest?.replaceRange(dstart, dend, "")
+        } else {
+            //添加操作
+            dest?.insertAt(dstart, source.subSequence(start, end))
+
+        }
+        Timber.e("afterStr:$afterStr")
+    }
 
     /**
      * @param source 为即将输入的字符串
@@ -63,60 +204,55 @@ class MaxNumInputFilter : InputFilter {
      * @return null表示原始输入，""表示不接受输入，其他字符串表示变化值
      */
     override fun filter(
-        source: CharSequence?,
+        source: CharSequence,
         start: Int,
         end: Int,
-        dest: Spanned?,
+        dest: Spanned,
         dstart: Int,
         dend: Int
     ): CharSequence? {
-        Timber.e("source:$source,start:$start,end:$end,dest:$dest,dstart:$dstart,dend:$dend")
-        /* val afterStr = if (source.isNullOrEmpty()) {
-             //是删除操作
-             dest?.replaceRange(dstart, dend, "")
-         } else {
-             //添加操作
-             dest?.insertAt(dstart, source.subSequence(start, end))
-         }
-         Timber.e("afterStr:$afterStr")*/
+        log(source, start, end, dest, dstart, dend)
 
-        var ended = end
+        val accept = acceptedChars
 
-        val accept: CharArray = CHARACTERS
-
-
-        var i: Int
-        run {
-            i = start
-            while (i < ended) {
-                if (!ok(accept, source!![i])) {
-                    break
-                }
-                i++
+        var i = start
+        while (i < end) {
+            if (!ok(accept, source[i])) {
+                break
             }
+            i++
         }
 
-        if (i == ended) { // It was all OK.
+        if (i == end) {
+            //全部都输入可接受的字符
             return null
         }
 
-        if (ended - start == 1) { // It was not OK, and there is only one char, so nothing remains.
+        if (end - start == 1) {
+            //不好，只有一个字符，所以什么也没剩下。
             return ""
         }
 
-        val filtered = SpannableStringBuilder(source, start, ended)
+        var innerEnd = end
+        val filtered = SpannableStringBuilder(source, start, innerEnd)
         i -= start
-        ended -= start
+        innerEnd -= start
 
-        // Only count down to i because the chars before that were all OK.
-        // Only count down to i because the chars before that were all OK.
-        for (j in ended - 1 downTo i) {
-            if (!ok(accept, source!![j])) {
+        for (j in innerEnd - 1 downTo i) {
+            if (!ok(accept, source[j])) {
                 filtered.delete(j, j + 1)
             }
         }
 
         return filtered
+    }
 
+    protected open fun ok(accept: CharArray, c: Char): Boolean {
+        for (i in accept.indices.reversed()) {
+            if (accept[i] == c) {
+                return true
+            }
+        }
+        return false
     }
 }
