@@ -23,7 +23,11 @@ class FirstPageFragment(override val layoutId: Int = R.layout.fragment_first_pag
             )
 
 
-            test.filters = arrayOf(*(test.filters), AccuracyFilter(500.0, 2))
+            test.filters = arrayOf(
+                *(test.filters),
+//                DigitsInputFilter.decimalFilter())
+                AccuracyFilter(500.0, 2)
+            )
 
         }
     }
@@ -50,11 +54,14 @@ class AccuracyFilter(private val _maxNum: Double, private val accuracy: Int) :
         dend: Int
     ): CharSequence? {
         val out = super.filter(source, start, end, dest, dstart, dend)
+
         var innerSource = source
         var innerStart = start
         var innerEnd = end
 
-        if (out != null) {
+        if (out?.isEmpty() == true) {
+            return out
+        } else if (out != null) {
             innerSource = out
             innerStart = 0
             innerEnd = out.length
@@ -74,7 +81,7 @@ class AccuracyFilter(private val _maxNum: Double, private val accuracy: Int) :
         //判断一下小数位的精度
         val decimalPointIndex = afterStr.indexOf(mDecimalPointChars)
         if (decimalPointIndex != -1) {
-            val innerAccuracy = afterStr.length-1 - decimalPointIndex
+            val innerAccuracy = afterStr.length - 1 - decimalPointIndex
             if (innerAccuracy > accuracy) {
                 return ""
             }
@@ -93,6 +100,13 @@ class AccuracyFilter(private val _maxNum: Double, private val accuracy: Int) :
         }
 
         if (result > innerMaxNum) {
+
+            if (source.isEmpty()){
+                //删除操作
+                //不让删
+                return dest.subSequence(dstart, dend)
+            }
+
             return ""
         }
 
@@ -111,7 +125,7 @@ open class DigitsInputFilter constructor(
         COMPATIBILITY_CHARACTERS[(if (mSign) SIGN else 0) or (if (mDecimal) DECIMAL else 0)]
 
     protected val mDecimalPointChars: String = DEFAULT_DECIMAL_POINT_CHARS
-    protected val mSignChars = DEFAULT_SIGN_CHARS
+    private val mSignChars = DEFAULT_SIGN_CHARS
 
     companion object {
         private val COMPATIBILITY_CHARACTERS = arrayOf(
