@@ -3,14 +3,6 @@
 
     <data>
 
-
-        <!--<import type="com.siy.mvvm.exm.ui.main.FirstPageFragment" />
-
-        <variable
-            name="hostFrg"
-            type="com.siy.mvvm.exm.ui.main.FirstPageFragment" />-->
-
-
         <variable
             name="click0s"
             type="java.util.Map&lt;String,kotlin.jvm.functions.Function0&lt;kotlin.Unit&gt;&gt;" />
@@ -49,13 +41,6 @@
             android:text="ForResult"
             android:textColor="@android:color/black"
             android:textSize="14sp" />
-
-
-        <EditText
-            android:id="@+id/test"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginTop="10dp" />
 
     </LinearLayout>
 </layout>
