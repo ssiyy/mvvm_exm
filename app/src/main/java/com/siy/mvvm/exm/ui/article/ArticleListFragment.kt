@@ -10,6 +10,8 @@ import androidx.navigation.findNavController
 import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.BaseViewHolder
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.base.Injectable
 import com.siy.mvvm.exm.base.MvvmDb
@@ -70,7 +72,7 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val viewModel: ArticleListViewModel by viewModels {
+    private val mViewModel: ArticleListViewModel by viewModels {
         viewModelFactory
     }
 
@@ -88,6 +90,7 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
         }
 
         mViewDataBinding.run {
+            viewModel = mViewModel
             header = object : CommonHeader() {
                 init {
                     title.value = "首页"
@@ -99,78 +102,36 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
                 }
             }
 
-            search = object : AutoSearch(viewLifecycleOwner, viewModel.searchStr.value) {
+            search = object : AutoSearch(viewLifecycleOwner, mViewModel.searchStr.value) {
                 override fun searchApi(searchStr: String) {
-                    viewModel.showArctiles(searchStr)
+                    mViewModel.showArctiles(searchStr)
                 }
             }
 
             click0s = mapOf(
-                "onRefresh" to viewModel::refresh,
-                "onLoadMore" to viewModel::loadMore
+                "onRefresh" to mViewModel::refresh,
+                "onLoadMore" to mViewModel::loadMore
             )
 
-            click1s = mapOf(
-                "onItemClick" to
-                        fun(postion: Int) {
-                            val item = artAdapter.getItem(postion)
-                            item?.let {
-                                navController.navigateAnimate(
-                                    ArticleListFragmentDirections.actionFirstPageFragmentToWebViewFragment(
-                                        it.link
-                                    )
-                                )
-                            }
-                        }
-            )
+            onItemClick = fun(adapter: BaseQuickAdapter<Any, BaseViewHolder>, pos: Int) {
+                (adapter.getItem(pos) as? Article)?.run {
+                    navController.navigateAnimate(
+                        ArticleListFragmentDirections.actionFirstPageFragmentToWebViewFragment(
+                            link
+                        )
+                    )
+                }
+            }
             adapter = artAdapter
         }
-        setUpObserver(artAdapter, headerView)
+        setUpObserver(headerView)
     }
 
-    private fun setUpObserver(adapter: ArticleListAdapter, headerView: LoopViewPager) {
-        viewModel.banners.observe(viewLifecycleOwner) {
+    private fun setUpObserver(headerView: LoopViewPager) {
+        mViewModel.banners.observe(viewLifecycleOwner) {
             if (it.data?.isNotEmpty() == true) {
                 headerView.adapter = BannerAdapter(viewLifecycleOwner.lifecycleScope, it.data)
             }
-        }
-
-        viewModel.articleList.observe(viewLifecycleOwner) {
-            adapter.submitList(it, lifecycleScope)
-        }
-
-        viewModel.loadState.observe(viewLifecycleOwner) {
-            when (it.status) {
-                PAGESTATUS.COMPLETE -> {
-                    adapter.loadMoreComplete()
-                }
-                PAGESTATUS.ERROR, PAGESTATUS.END -> {
-                    adapter.loadMoreEnd()
-                }
-                else -> Unit
-            }
-        }
-
-        viewModel.refreshState.observe(viewLifecycleOwner) {
-            when (it.status) {
-                PAGESTATUS.LOADING ->
-                    if (!mViewDataBinding.srlLayout.isRefreshing) {
-                        mViewDataBinding.srlLayout.isRefreshing = true
-                    }
-                PAGESTATUS.ERROR, PAGESTATUS.COMPLETE -> {
-                    stopRefresh()
-                }
-                else -> Unit
-            }
-        }
-    }
-
-    /**
-     * 停止刷新
-     */
-    private fun stopRefresh() {
-        if (mViewDataBinding.srlLayout.isRefreshing) {
-            mViewDataBinding.srlLayout.isRefreshing = false
         }
     }
 
@@ -253,13 +214,13 @@ class ArticleListViewModel @Inject constructor(
     /**
      * 加载状态
      */
-    val loadState = MutableLiveData<PageRes>()
+    val loadState = MutableLiveData<PAGESTATUS>()
 
 
     /**
      * 刷新状态
      */
-    val refreshState = MutableLiveData<PageRes>()
+    val refreshState = MutableLiveData<Boolean>()
 
 
     /**
@@ -316,7 +277,7 @@ class ArticleListViewModel @Inject constructor(
     private fun loadState(load: Flow<PageRes>) {
         viewModelScope.launch {
             load.collect {
-                loadState.value = it
+                loadState.value = it.status
             }
         }
     }
@@ -324,7 +285,7 @@ class ArticleListViewModel @Inject constructor(
     private fun refreshState(refresh: Flow<PageRes>) {
         viewModelScope.launch {
             refresh.collect {
-                refreshState.value = it
+                refreshState.value = it.status == PAGESTATUS.LOADING
             }
         }
     }

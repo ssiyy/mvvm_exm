@@ -73,15 +73,15 @@
             android:layout_height="wrap_content"
             bind:colorSchemeColors="@{Utils.colorSchemeColors}"
             bind:onRefreshListener="@{()->click0s.onRefresh.invoke()}"
-            bind:progressBackgroundColorSchemeResource="@{R.color.white}">
+            bind:progressBackgroundColorSchemeResource="@{R.color.white}"
+            bind:refreshing="@{viewModel.refreshState}">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adapter="@{`com.siy.mvvm.exm.ui.square.SquareListAdapter`}"
                 android:emptyView="@{Utils.getEmptyPromptView(context,@string/no_more_data)}"
-                android:listItems="@{viewModel.articleList}"
+                android:listItems="@{viewModel.squareList}"
                 android:loadMoreEnable="@{true}"
                 android:loadState="@{viewModel.loadState}"
                 android:onItemClick="@{(a,b,c)->onItemClick.invoke(a,c)}"

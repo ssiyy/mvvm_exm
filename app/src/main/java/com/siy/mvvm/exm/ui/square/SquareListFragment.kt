@@ -66,35 +66,6 @@ class SquareListFragment(override val layoutId: Int = R.layout.fragment_square_l
                     )
                 }
             }
-
-
-            setupRefreshLayout(srlLayout, recyclerView)
-        }
-
-        setUpObserver()
-    }
-
-    private fun setUpObserver() {
-        mViewModel.refreshState.observe(viewLifecycleOwner) {
-            when (it.status) {
-                PAGESTATUS.LOADING ->
-                    if (!mViewDataBinding.srlLayout.isRefreshing) {
-                        mViewDataBinding.srlLayout.isRefreshing = true
-                    }
-                PAGESTATUS.ERROR, PAGESTATUS.COMPLETE -> {
-                    stopRefresh()
-                }
-                else -> Unit
-            }
-        }
-    }
-
-    /**
-     * 停止刷新
-     */
-    private fun stopRefresh() {
-        if (mViewDataBinding.srlLayout.isRefreshing) {
-            mViewDataBinding.srlLayout.isRefreshing = false
         }
     }
 }
@@ -113,7 +84,7 @@ class SqueareListModel @Inject constructor(
     /**
      * 列表
      */
-    val articleList = listPageing.switchMap {
+    val squareList = listPageing.switchMap {
         it.list
     }
 
@@ -132,6 +103,8 @@ class SqueareListModel @Inject constructor(
      */
     val refreshState = listPageing.switchMap {
         it.refreshStatus
+    }.map {
+        it.status == PAGESTATUS.LOADING
     }
 
     /**
