@@ -136,7 +136,7 @@ class ArticleListFragment(override val layoutId: Int = R.layout.fragment_article
         }
 
         viewModel.articleList.observe(viewLifecycleOwner) {
-            adapter.asyncDisffData(it, lifecycleScope)
+            adapter.submitList(it, lifecycleScope)
         }
 
         viewModel.loadState.observe(viewLifecycleOwner) {

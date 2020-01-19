@@ -3,36 +3,38 @@ package com.siy.mvvm.exm.ui.square
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.*
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.BaseViewHolder
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.base.Injectable
 import com.siy.mvvm.exm.base.repository.loadDataByPage
 import com.siy.mvvm.exm.base.ui.BaseFragment
 import com.siy.mvvm.exm.base.ui.navigateAnimate
-import com.siy.mvvm.exm.databinding.FragmentArticleListBinding
+import com.siy.mvvm.exm.databinding.FragmentSquareListBinding
 import com.siy.mvvm.exm.db.dao.UserArticleDao
 import com.siy.mvvm.exm.http.GbdService
 import com.siy.mvvm.exm.http.PAGESTATUS
+import com.siy.mvvm.exm.ui.UserArticle
 import com.siy.mvvm.exm.utils.setupRefreshLayout
 import com.siy.mvvm.exm.views.header.CommonHeader
 import com.siy.mvvm.exm.views.search.AutoSearch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-class SquareListFragment(override val layoutId: Int = R.layout.fragment_article_list) :
-    BaseFragment<FragmentArticleListBinding>(), Injectable {
+class SquareListFragment(override val layoutId: Int = R.layout.fragment_square_list) :
+    BaseFragment<FragmentSquareListBinding>(), Injectable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val viewModel: SqueareListModel by viewModels {
+    private val mViewModel: SqueareListModel by viewModels {
         viewModelFactory
     }
 
     override fun initViewsAndEvents(view: View) {
 
-        val squareAdapter = SquareListAdapter()
-
         mViewDataBinding.run {
+            viewModel = mViewModel
             header = object : CommonHeader() {
                 init {
                     title.value = "广场"
@@ -44,56 +46,36 @@ class SquareListFragment(override val layoutId: Int = R.layout.fragment_article_
                 }
             }
 
-            search = object : AutoSearch(viewLifecycleOwner, viewModel.searchStr.value) {
+            search = object : AutoSearch(viewLifecycleOwner, mViewModel.searchStr.value) {
                 override fun searchApi(searchStr: String) {
-                    viewModel.showUserArctiles(searchStr)
+                    mViewModel.showUserArctiles(searchStr)
                 }
             }
 
             click0s = mapOf(
-                "onRefresh" to viewModel::refresh,
-                "onLoadMore" to viewModel::loadMore
+                "onRefresh" to mViewModel::refresh,
+                "onLoadMore" to mViewModel::loadMore
             )
 
-            click1s = mapOf(
-                "onItemClick" to
-                        fun(postion: Int) {
-                            val item = squareAdapter.getItem(postion)
-                            item?.let {
-                                navController.navigateAnimate(
-                                    SquareListFragmentDirections.actionSquareListFragmentToWebViewFragment(
-                                        it.link
-                                    )
-                                )
-                            }
-                        }
-            )
+            onItemClick = fun(adapter: BaseQuickAdapter<Any, BaseViewHolder>, pos: Int) {
+                (adapter.getItem(pos) as? UserArticle)?.run {
+                    navController.navigateAnimate(
+                        SquareListFragmentDirections.actionSquareListFragmentToWebViewFragment(
+                            link
+                        )
+                    )
+                }
+            }
 
-            adapter = squareAdapter
+
             setupRefreshLayout(srlLayout, recyclerView)
         }
 
-        setUpObserver(squareAdapter)
+        setUpObserver()
     }
 
-    private fun setUpObserver(adapter: SquareListAdapter) {
-        viewModel.articleList.observe(viewLifecycleOwner) {
-            adapter.asyncDisffData(it, lifecycleScope)
-        }
-
-        viewModel.loadState.observe(viewLifecycleOwner) {
-            when (it.status) {
-                PAGESTATUS.COMPLETE -> {
-                    adapter.loadMoreComplete()
-                }
-                PAGESTATUS.ERROR, PAGESTATUS.END -> {
-                    adapter.loadMoreEnd()
-                }
-                else -> Unit
-            }
-        }
-
-        viewModel.refreshState.observe(viewLifecycleOwner) {
+    private fun setUpObserver() {
+        mViewModel.refreshState.observe(viewLifecycleOwner) {
             when (it.status) {
                 PAGESTATUS.LOADING ->
                     if (!mViewDataBinding.srlLayout.isRefreshing) {
@@ -141,6 +123,8 @@ class SqueareListModel @Inject constructor(
      */
     val loadState = listPageing.switchMap {
         it.loadStatus
+    }.map {
+        it.status
     }
 
     /**
@@ -177,7 +161,7 @@ class SqueareListModel @Inject constructor(
 class SqueareListRep @Inject constructor(
     private val service: GbdService,
     private val dao: UserArticleDao
-)  {
+) {
 
     fun getUserArtclesByPage(search: String) =
         loadDataByPage(

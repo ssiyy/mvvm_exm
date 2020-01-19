@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.siy.mvvm.exm.R
+import com.siy.mvvm.exm.views.recylerview.NpaLinearLayoutManager
 
 
 /**
@@ -20,7 +21,7 @@ import com.siy.mvvm.exm.R
  *
  * @author Siy
  */
-class ArticleListLinearLayoutManager : LinearLayoutManager {
+class ArticleListLinearLayoutManager : NpaLinearLayoutManager {
 
     @Suppress("unused")
     constructor(context: Context) : super(context)

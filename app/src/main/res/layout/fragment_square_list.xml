@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.siy.mvvm.exm.utils.Utils" />
+
+        <import type="com.siy.mvvm.exm.views.header.CommonHeader" />
+
+        <import type="com.siy.mvvm.exm.views.search.AutoSearch" />
+
+        <import type="android.R" />
+
+        <import type="com.chad.library.adapter.base.BaseQuickAdapter" />
+
+        <import type="kotlin.jvm.functions.Function0" />
+
+        <import type="kotlin.jvm.functions.Function2" />
+
+        <import type="com.chad.library.adapter.base.BaseViewHolder" />
+
+        <import type="kotlin.Unit" />
+
+        <import type="java.util.Map" />
+
+
+        <variable
+            name="click0s"
+            type="Map&lt;String,Function0&lt;Unit&gt;&gt;" />
+
+        <variable
+            name="onItemClick"
+            type="Function2&lt;BaseQuickAdapter&lt;Object,BaseViewHolder>,Integer,Unit&gt;" />
+
+        <variable
+            name="header"
+            type="CommonHeader" />
+
+        <variable
+            name="search"
+            type="AutoSearch" />
+
+        <variable
+            name="viewModel"
+            type="com.siy.mvvm.exm.ui.square.SqueareListModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/common_header_layout"
+            bind:header="@{header}" />
+
+        <include
+            layout="@layout/common_search_layout"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="-10dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="10dp"
+            bind:search="@{search}" />
+
+        <com.siy.mvvm.exm.views.ScrollChildSwipeRefreshLayout
+            android:id="@+id/srl_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            bind:colorSchemeColors="@{Utils.colorSchemeColors}"
+            bind:onRefreshListener="@{()->click0s.onRefresh.invoke()}"
+            bind:progressBackgroundColorSchemeResource="@{R.color.white}">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adapter="@{`com.siy.mvvm.exm.ui.square.SquareListAdapter`}"
+                android:emptyView="@{Utils.getEmptyPromptView(context,@string/no_more_data)}"
+                android:listItems="@{viewModel.articleList}"
+                android:loadMoreEnable="@{true}"
+                android:loadState="@{viewModel.loadState}"
+                android:onItemClick="@{(a,b,c)->onItemClick.invoke(a,c)}"
+                android:onLoadMore="@{()->click0s.onLoadMore.invoke()}"
+                bind:layoutManager="com.siy.mvvm.exm.ui.article.ArticleListLinearLayoutManager"
+                tools:listitem="@layout/item_article" />
+        </com.siy.mvvm.exm.views.ScrollChildSwipeRefreshLayout>
+    </LinearLayout>
+</layout>

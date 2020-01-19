@@ -16,6 +16,8 @@ import kotlinx.coroutines.withContext
 
 /**
  *
+ * RecyleView的适配器的基类
+ *
  * Created by Siy on  2019/12/10.
  *
  * @author Siy
@@ -29,7 +31,7 @@ abstract class BaseAdapter<T, K : BaseViewHolder>
 
     var mListener: ((previousList: List<T>, currentList: List<T>) -> Unit)? = null
 
-    fun asyncDisffData(newData: List<T>?, lifecycleScope: LifecycleCoroutineScope?) {
+    open fun submitList(newData: List<T>?, lifecycleScope: LifecycleCoroutineScope?) {
         if (newData == mData) {
             return
         }
@@ -50,7 +52,7 @@ abstract class BaseAdapter<T, K : BaseViewHolder>
         }
 
         val func = suspend {
-            diffCallback?.let {
+            if (diffCallback != null) {
                 val result = withContext(Dispatchers.Default) {
                     DiffUtil.calculateDiff(object : BaseQuickDiffCallback<T>(newData) {
                         init {
@@ -73,6 +75,8 @@ abstract class BaseAdapter<T, K : BaseViewHolder>
                 }
                 setNewDiffData(result, newData)
                 mListener?.invoke(previousList, newData)
+            } else {
+                setNewData(newData)
             }
         }
 
