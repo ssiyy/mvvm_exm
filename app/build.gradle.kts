@@ -10,7 +10,7 @@ plugins {
 android {
     compileSdkVersion(28)
 
-     defaultConfig {
+    defaultConfig {
         applicationId = "com.siy.mvvm.exm"
         minSdkVersion(17)
         targetSdkVersion(28)
@@ -48,14 +48,17 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      //      signingConfig = signingConfigs.getByName("releaseKey")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            //      signingConfig = signingConfigs.getByName("releaseKey")
             isZipAlignEnabled = true
         }
 
         getByName("debug") {
             applicationIdSuffix = ".debug"
-         //   signingConfig = signingConfigs.getByName("debugKey")
+            //   signingConfig = signingConfigs.getByName("debugKey")
             isZipAlignEnabled = true
         }
     }
@@ -94,7 +97,7 @@ dependencies {
 
     //rx 权限管理
     // implementation("com.github.tbruyelle:rxpermissions:0.10.2")
-   //implementation("com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha2")
+    //implementation("com.jakewharton.rxbinding3:rxbinding:3.0.0-alpha2")
 
 
     //kotlin
@@ -158,7 +161,9 @@ dependencies {
     //Kottlin版本的Rxbinding
     implementation("ru.ldralighieri.corbind:corbind:1.2.0")
 
-    implementation ("com.github.bumptech.glide:glide:4.8.0")
+    implementation("com.github.bumptech.glide:glide:4.8.0")
     implementation("com.github.bumptech.glide:okhttp3-integration:4.3.1")
     kapt("com.github.bumptech.glide:compiler:4.8.0")
+
+    implementation(project(path = ":flutter"))
 }
