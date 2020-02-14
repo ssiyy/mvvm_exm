@@ -11,6 +11,8 @@ import com.siy.mvvm.exm.utils.autoDisposable
 import com.siy.mvvm.exm.utils.goToAppMarket
 import com.siy.mvvm.exm.utils.showToast
 import com.siy.mvvm.exm.views.MainIndicator
+import io.flutter.embedding.android.FlutterFragment
+import io.flutter.embedding.android.FlutterView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import io.reactivex.processors.PublishProcessor
@@ -54,9 +56,14 @@ class MainFragment(
 
     private fun initPages() {
         val fragments =
-            listOf<Fragment>(
-                A1Fragment(), FirstPageFragment(),
-                A2Fragment(), A3Fragment()
+            listOf(
+                (FlutterFragment.withNewEngine()
+                    .renderMode(FlutterView.RenderMode.texture)
+                    .initialRoute("abcjjjjjjjj")
+                    .build()) as Fragment,
+                FirstPageFragment(),
+                A2Fragment(),
+                A3Fragment()
             )
         val adapter = object : FragmentPagerAdapter(childFragmentManager) {
             override fun getItem(position: Int) = fragments[position]

@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+import 'dart:ui';
+
+void main() => runApp(MyApp(initParams: window.defaultRouteName));
 
 class MyApp extends StatelessWidget {
+  final String initParams;
+
+  MyApp({Key key, this.initParams}) : super(key: key);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -19,7 +25,7 @@ class MyApp extends StatelessWidget {
         // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Demo Home Page $initParams'),
     );
   }
 }
