@@ -41,6 +41,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+    - assets/image/common_back.png
+    - assets/image/timeline_like_normal.png
+
+
   # To add Flutter specific assets to your application, add an assets section, 
   # like this:
   # assets:
