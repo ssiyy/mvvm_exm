@@ -10,17 +10,28 @@
             type="int" />
     </data>
 
-    <android.app.FragmentBreadCrumbs
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <com.siy.mvvm.exm.ui.main.BarView
+            android:id="@+id/bV"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="20dp"
             android:orientation="vertical"
             android:scaleType="centerCrop"
+            android:visibility="gone"
             bind:backgroundResource="@{resId}"
             tools:background="@drawable/a1" />
 
-    </android.app.FragmentBreadCrumbs>
+    </LinearLayout>
 </layout>
