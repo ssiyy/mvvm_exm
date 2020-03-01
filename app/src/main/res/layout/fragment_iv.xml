@@ -29,7 +29,7 @@
             android:layout_marginTop="20dp"
             android:orientation="vertical"
             android:scaleType="centerCrop"
-            android:visibility="gone"
+            android:visibility="visible"
             bind:backgroundResource="@{resId}"
             tools:background="@drawable/a1" />
 

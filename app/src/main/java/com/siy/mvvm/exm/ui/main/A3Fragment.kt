@@ -11,9 +11,10 @@ class A3Fragment(override val layoutId: Int = R.layout.fragment_iv) : BaseLazyFr
         mViewDataBinding.run {
             resId = R.drawable.a3
 
-            bV.total = 100f
-            bV.dataColors = listOf(Pair(Color.RED,100f),Pair(Color.BLUE,100f))
-
+            bV.total = 900f
+            bV.dataColors = listOf(Pair(Color.RED,50f),Pair(Color.BLACK,200f))
+            bV.valuesColor = Color.GRAY
+            bV.valuesSize = 50f
 
         }
     }
