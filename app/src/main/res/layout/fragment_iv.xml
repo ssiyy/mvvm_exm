@@ -10,28 +10,14 @@
             type="int" />
     </data>
 
-
-    <LinearLayout
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:scaleType="centerCrop"
+        android:visibility="visible"
+        bind:backgroundResource="@{resId}"
+        tools:background="@drawable/a1" />
 
-
-        <com.siy.mvvm.exm.ui.main.BarView
-            android:id="@+id/bV"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
-
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical"
-            android:scaleType="centerCrop"
-            android:visibility="visible"
-            bind:backgroundResource="@{resId}"
-            tools:background="@drawable/a1" />
-
-    </LinearLayout>
 </layout>

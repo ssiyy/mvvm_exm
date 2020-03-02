@@ -10,6 +10,6 @@ import com.chad.library.adapter.base.BaseViewHolder
  *
  * @author Siy
  */
-class BaseBindingViewHolder<B : ViewDataBinding>(view: View) : BaseViewHolder(view) {
+open class BaseBindingViewHolder<B : ViewDataBinding>(view: View) : BaseViewHolder(view) {
      var binding: B? = null
 }
