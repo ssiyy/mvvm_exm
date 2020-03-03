@@ -63,9 +63,9 @@ class A3Fragment(override val layoutId: Int = R.layout.fragment_a3) :
                         val ss = IntArray(2)
                         splitLine.getLocationOnScreen(ss)
                         val popupWindow = MarkViewWindow(requireActivity())
-
                         popupWindow.showAtLocation(
-                            Pair("chhch",
+                            Pair(
+                                "测试",
                                 listOf(
                                     Pair(Color.GREEN, "测试一：1000"),
                                     Pair(Color.BLUE, "测试一：1000"),
@@ -74,7 +74,8 @@ class A3Fragment(override val layoutId: Int = R.layout.fragment_a3) :
                                     Pair(Color.BLUE, "测试一：1000"),
                                     Pair(Color.BLUE, "测试一：10000000000000000"),
                                     Pair(Color.WHITE, "测试一：1000")
-                                )),
+                                )
+                            ),
                             requireActivity().window.decorView,
                             Gravity.NO_GRAVITY,
                             ss[0],
@@ -107,7 +108,12 @@ class BarAdapter(datas: List<Pair<String, List<Pair<Int, Float>>>>) :
 
 class MarkViewWindow(mContext: Context) : PopupWindow(mContext) {
     private val dataBinding =
-        DataBindingUtil.inflate<MarkViewWindowLayoutBinding>(LayoutInflater.from(mContext),R.layout.mark_view_window_layout, null, false)
+        DataBindingUtil.inflate<MarkViewWindowLayoutBinding>(
+            LayoutInflater.from(mContext),
+            R.layout.mark_view_window_layout,
+            null,
+            false
+        )
 
     init {
         isFocusable = true
@@ -115,7 +121,7 @@ class MarkViewWindow(mContext: Context) : PopupWindow(mContext) {
         setBackgroundDrawable(ColorDrawable(0x00000000))
 
         contentView = dataBinding.run {
-            recyclerView.adapter =  MarkViewAdapter()
+            recyclerView.adapter = MarkViewAdapter()
             root
         }
     }
@@ -166,5 +172,4 @@ class MarkViewAdapter(var pair: List<Pair<Int, String>>? = null) :
             lable.text = item.second
         }
     }
-
 }
