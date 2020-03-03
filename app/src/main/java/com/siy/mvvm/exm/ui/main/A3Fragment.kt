@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.siy.mvvm.exm.R
@@ -64,6 +65,16 @@ class A3Fragment(override val layoutId: Int = R.layout.fragment_a3) :
                         val popupWindow = MarkViewWindow(requireActivity())
 
                         popupWindow.showAtLocation(
+                            Pair("chhch",
+                                listOf(
+                                    Pair(Color.GREEN, "测试一：1000"),
+                                    Pair(Color.BLUE, "测试一：1000"),
+                                    Pair(Color.BLUE, "测试一：1000"),
+                                    Pair(Color.BLUE, "测试一：1000"),
+                                    Pair(Color.BLUE, "测试一：1000"),
+                                    Pair(Color.BLUE, "测试一：10000000000000000"),
+                                    Pair(Color.WHITE, "测试一：1000")
+                                )),
                             requireActivity().window.decorView,
                             Gravity.NO_GRAVITY,
                             ss[0],
@@ -95,30 +106,34 @@ class BarAdapter(datas: List<Pair<String, List<Pair<Int, Float>>>>) :
 
 
 class MarkViewWindow(mContext: Context) : PopupWindow(mContext) {
+    private val view =
+        LayoutInflater.from(mContext).inflate(R.layout.mark_view_window_layout, null, false)
 
 
     init {
         isFocusable = true
         isOutsideTouchable = true
         setBackgroundDrawable(ColorDrawable(0x00000000))
-        val view =
-            LayoutInflater.from(mContext).inflate(R.layout.mark_view_window_layout, null, false)
-        val ada = MarkViewAdapter(
-            listOf(
-                Pair(Color.GREEN, "测试一：1000"),
-                Pair(Color.BLUE, "测试一：1000"),
-                Pair(Color.BLUE, "测试一：1000"),
-                Pair(Color.BLUE, "测试一：1000"),
-                Pair(Color.BLUE, "测试一：1000"),
-                Pair(Color.BLUE, "测试一：10000000000000000"),
-                Pair(Color.WHITE, "测试一：1000")
-            )
-        )
+
+        val ada = MarkViewAdapter()
 
 
         val rv = view.findViewById<RecyclerView>(R.id.recycler_view)
         rv.adapter = ada
+        contentView = view
+    }
 
+
+    fun showAtLocation(
+        data: Pair<String, List<Pair<Int, String>>>,
+        parent: View?,
+        gravity: Int,
+        x: Int,
+        y: Int
+    ) {
+
+        view.findViewById<TextView>(R.id.lable).text = data.first
+        (view.findViewById<RecyclerView>(R.id.recycler_view).adapter as MarkViewAdapter).setNewData(data.second)
 
         // 在popupWindow还没有弹出显示之前就测量获取其宽高（单位是px像素）
         val w = View.MeasureSpec.makeMeasureSpec(
@@ -133,7 +148,7 @@ class MarkViewWindow(mContext: Context) : PopupWindow(mContext) {
 
         width = view.measuredWidth
         height = ViewGroup.LayoutParams.WRAP_CONTENT
-        contentView = view
+        super.showAtLocation(parent, gravity, x, y)
     }
 
 
