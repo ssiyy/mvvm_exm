@@ -9,14 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
-import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
+import androidx.databinding.DataBindingUtil
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.siy.mvvm.exm.R
 import com.siy.mvvm.exm.base.ui.BaseLazyFragment
 import com.siy.mvvm.exm.databinding.FragmentA3Binding
 import com.siy.mvvm.exm.databinding.ItemBarLayoutBinding
 import com.siy.mvvm.exm.databinding.MarkViewWindowItemLayoutBinding
+import com.siy.mvvm.exm.databinding.MarkViewWindowLayoutBinding
 import com.siy.mvvm.exm.utils.showToast
 import com.siy.mvvm.exm.views.recylerview.databindingadapter.BaseDataBindingAdapter
 
@@ -106,21 +106,18 @@ class BarAdapter(datas: List<Pair<String, List<Pair<Int, Float>>>>) :
 
 
 class MarkViewWindow(mContext: Context) : PopupWindow(mContext) {
-    private val view =
-        LayoutInflater.from(mContext).inflate(R.layout.mark_view_window_layout, null, false)
-
+    private val dataBinding =
+        DataBindingUtil.inflate<MarkViewWindowLayoutBinding>(LayoutInflater.from(mContext),R.layout.mark_view_window_layout, null, false)
 
     init {
         isFocusable = true
         isOutsideTouchable = true
         setBackgroundDrawable(ColorDrawable(0x00000000))
 
-        val ada = MarkViewAdapter()
-
-
-        val rv = view.findViewById<RecyclerView>(R.id.recycler_view)
-        rv.adapter = ada
-        contentView = view
+        contentView = dataBinding.run {
+            recyclerView.adapter =  MarkViewAdapter()
+            root
+        }
     }
 
 
@@ -132,8 +129,8 @@ class MarkViewWindow(mContext: Context) : PopupWindow(mContext) {
         y: Int
     ) {
 
-        view.findViewById<TextView>(R.id.lable).text = data.first
-        (view.findViewById<RecyclerView>(R.id.recycler_view).adapter as MarkViewAdapter).setNewData(data.second)
+        dataBinding.lable.text = data.first
+        (dataBinding.recyclerView.adapter as MarkViewAdapter).setNewData(data.second)
 
         // 在popupWindow还没有弹出显示之前就测量获取其宽高（单位是px像素）
         val w = View.MeasureSpec.makeMeasureSpec(
@@ -144,9 +141,9 @@ class MarkViewWindow(mContext: Context) : PopupWindow(mContext) {
             (1 shl 30) - 1,
             View.MeasureSpec.AT_MOST
         )
-        view.measure(w, h)
+        contentView.measure(w, h)
 
-        width = view.measuredWidth
+        width = contentView.measuredWidth
         height = ViewGroup.LayoutParams.WRAP_CONTENT
         super.showAtLocation(parent, gravity, x, y)
     }

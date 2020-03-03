@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:bind="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/round_corner_shap"
@@ -15,7 +20,7 @@
             android:id="@+id/lable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="周六"
+            tools:text="测试"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
@@ -28,3 +33,4 @@
             tools:itemCount="3"
             tools:listitem="@layout/mark_view_window_item_layout" />
     </LinearLayout>
+</layout>
