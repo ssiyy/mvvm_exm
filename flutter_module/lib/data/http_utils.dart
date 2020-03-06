@@ -1,28 +1,24 @@
-
 import 'package:dio/dio.dart';
 
-class HttpService{
+class HttpService {
   static HttpService instance;
-
 
   Dio _diao;
 
-  static HttpService getInstance(){
-    if(instance == null){
-      instance = _HttpService();
+  static HttpService getInstance() {
+    if (instance == null) {
+      instance = HttpService();
     }
 
     return instance;
   }
 
-  _HttpService(){
+  HttpService() {
     _diao = Dio()
-        ..options = BaseOptions(
-          baseUrl: "https://www.wanandroid.com",
-          connectTimeout: 30000,
-          receiveTimeout: 30000,
-        )
+      ..options = BaseOptions(
+        baseUrl: "https://www.wanandroid.com",
+        connectTimeout: 30000,
+        receiveTimeout: 30000,
+      );
   }
-
-
 }
