@@ -4,7 +4,11 @@
 task buildRunner(type:Exec){
     group "mvvm"
     description "build_runner"
-    commandLine "cmd","/c","flutter packages pub run build_runner build"
+
+    //flutter packages pub run build_runner build --delete-conflicting-outputs
+    //flutter packages pub run build_runner clean
+    //flutter packages pub run build_runner build
+    commandLine "cmd","/c","flutter packages pub run build_runner build --delete-conflicting-outputs"
 
     doLast {
         def outputStr = standardOutput.toString()

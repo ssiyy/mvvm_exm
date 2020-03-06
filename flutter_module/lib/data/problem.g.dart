@@ -6,38 +6,64 @@ part of 'problem.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+ProblemPage _$ProblemPageFromJson(Map<String, dynamic> json) {
+  return ProblemPage(
+    json['curPage'] as int,
+    json['offset'] as int,
+    json['over'] as bool,
+    json['pageCount'] as int,
+    json['size'] as int,
+    json['total'] as int,
+    (json['datas'] as List)
+        ?.map((e) =>
+            e == null ? null : Problem.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$ProblemPageToJson(ProblemPage instance) =>
+    <String, dynamic>{
+      'curPage': instance.curPage,
+      'offset': instance.offset,
+      'over': instance.over,
+      'pageCount': instance.pageCount,
+      'size': instance.size,
+      'total': instance.total,
+      'datas': instance.datas,
+    };
+
 Problem _$ProblemFromJson(Map<String, dynamic> json) {
   return Problem(
     json['apkLink'] as String,
-    json['audit'] as String,
+    json['audit'] as int,
     json['author'] as String,
-    json['canEdit'] as String,
-    json['chapterId'] as String,
+    json['canEdit'] as bool,
+    json['chapterId'] as int,
     json['chapterName'] as String,
-    json['collect'] as String,
-    json['courseId'] as String,
+    json['collect'] as bool,
+    json['courseId'] as int,
     json['desc'] as String,
     json['descMd'] as String,
     json['envelopePic'] as String,
-    json['fresh'] as String,
-    json['id'] as String,
+    json['fresh'] as bool,
+    json['id'] as int,
     json['link'] as String,
     json['niceDate'] as String,
     json['niceShareDate'] as String,
     json['origin'] as String,
     json['prefix'] as String,
     json['projectLink'] as String,
-    json['publishTime'] as String,
-    json['selfVisible'] as String,
-    json['shareDate'] as String,
+    json['publishTime'] as num,
+    json['selfVisible'] as int,
+    json['shareDate'] as num,
     json['shareUser'] as String,
-    json['superChapterId'] as String,
+    json['superChapterId'] as int,
     json['superChapterName'] as String,
     json['title'] as String,
-    json['type'] as String,
-    json['userId'] as String,
-    json['visible'] as String,
-    json['zan'] as String,
+    json['type'] as int,
+    json['userId'] as int,
+    json['visible'] as int,
+    json['zan'] as int,
     (json['tags'] as List)
         ?.map((e) => e == null ? null : Tag.fromJson(e as Map<String, dynamic>))
         ?.toList(),
