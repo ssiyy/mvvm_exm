@@ -28,6 +28,7 @@ class HttpService {
     var response = await _dio.get(url, queryParameters: params);
     if (response.statusCode == HttpStatus.ok) {
       var data = jsonDecode(response.toString());
+      print("url:$data");
       return data;
     } else {
       throw Exception("http reponse error");
