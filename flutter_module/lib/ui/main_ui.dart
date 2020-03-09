@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_module/api/http_utils.dart';
 import 'package:flutter_module/data/problem.dart';
 import 'package:flutter_module/data/reponse.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_module/ui/webview.dart';
 
 class MyApp extends StatefulWidget {
   final String initParams;
@@ -102,17 +102,22 @@ class _MyAppState extends State<MyApp> {
                         loading: isLoadDataing,
                       );
                     } else {
-                      return getItem(index);
+                      return getItem(context,index);
                     }
                   })),
         ));
   }
 
-  Widget getItem(int i) {
+  Widget getItem(BuildContext context,int i) {
     return GestureDetector(
       child: ListItem(_problems[i]),
       onTap: () {
-        Fluttertoast.showToast(msg: _problems[i].desc);
+        var item = _problems[i];
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    WebView(url: item.link, title: item.title)));
       },
     );
   }
