@@ -24,12 +24,19 @@ class HttpService {
       );
   }
 
-  Future<dynamic> get(String url, {Map<String, dynamic> params}) async {
+  Future<T> get<T>(String url,
+      {Map<String, dynamic> params,
+      T fromJson(Map<String, dynamic> json)}) async {
+    if (fromJson == null) {
+      fromJson = (value) {
+        return value as T;
+      };
+    }
+
     var response = await _dio.get(url, queryParameters: params);
     if (response.statusCode == HttpStatus.ok) {
       var data = jsonDecode(response.toString());
-      print("url:$data");
-      return data;
+      return fromJson(data);
     } else {
       throw Exception("http reponse error");
     }
