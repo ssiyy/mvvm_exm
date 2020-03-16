@@ -77,6 +77,7 @@
             bind:refreshing="@{viewModel.refreshState}">
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adapter="@{`com.siy.mvvm.exm.ui.square.SquareListAdapter`}"
@@ -86,7 +87,7 @@
                 android:loadState="@{viewModel.loadState}"
                 android:onItemClick="@{(a,b,c)->onItemClick.invoke(a,c)}"
                 android:onLoadMore="@{()->click0s.onLoadMore.invoke()}"
-                bind:layoutManager="com.siy.mvvm.exm.ui.article.ArticleListLinearLayoutManager"
+                bind:layoutManager="com.siy.mvvm.exm.views.recylerview.NpaLinearLayoutManager"
                 tools:listitem="@layout/item_article" />
         </com.siy.mvvm.exm.views.ScrollChildSwipeRefreshLayout>
     </LinearLayout>
