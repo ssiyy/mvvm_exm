@@ -57,16 +57,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<ProblemPage> getPageData(int pageIndex) async {
-    var reponse =
+    var problemPage =
         await HttpService.getInstance().get("/wenda/list/$pageIndex/json", fromJson :(map){
-          return Reponse.fromJson(map);
+          return ProblemPage.fromJson(map);
         });
-
-    if (reponse.isSuccess) {
-      return ProblemPage.fromJson(reponse.data);
-    } else {
-      throw Exception(reponse.errorMsg);
-    }
+    return problemPage;
   }
 
   Future<Null> _handlrefresh() async {

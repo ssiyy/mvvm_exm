@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter_module/data/reponse.dart';
 
 class HttpService {
   static HttpService instance;
@@ -36,7 +37,13 @@ class HttpService {
     var response = await _dio.get(url, queryParameters: params);
     if (response.statusCode == HttpStatus.ok) {
       var data = jsonDecode(response.toString());
-      return fromJson(data);
+      print(data);
+      var reponse = Reponse.fromJson(data);
+      if (reponse.isSuccess) {
+        return fromJson(reponse.data);
+      } else {
+        throw reponse.errorMsg;
+      }
     } else {
       throw Exception("http reponse error");
     }
