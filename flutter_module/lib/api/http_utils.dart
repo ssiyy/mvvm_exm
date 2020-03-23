@@ -24,21 +24,21 @@ class HttpService {
 
   Future<T> get<T>(String url,
       {Map<String, dynamic> params,
-      T fromJson(Map<String, dynamic> json)}) async {
+      T fromJson(Reponse result)}) async {
     return _request(url, Options(method: "GET"),
         params: params, fromJson: fromJson);
   }
 
   Future<T> post<T>(String url,
       {Map<String, dynamic> params,
-      T fromJson(Map<String, dynamic> json)}) async {
+      T fromJson(Reponse result)}) async {
     return _request(url, Options(method: "POST"),
         params: params, fromJson: fromJson);
   }
 
   Future<T> _request<T>(String url, Options options,
       {Map<String, dynamic> params,
-      T fromJson(Map<String, dynamic> json)}) async {
+      T fromJson(Reponse result)}) async {
     if (fromJson == null) {
       fromJson = (value) {
         return value as T;
@@ -51,7 +51,7 @@ class HttpService {
       print(data);
       var reponse = Reponse.fromJson(data);
       if (reponse.isSuccess) {
-        return fromJson(reponse.data);
+        return fromJson(reponse);
       } else {
         throw reponse.errorMsg;
       }
