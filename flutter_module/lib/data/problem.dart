@@ -8,13 +8,12 @@ part 'problem.g.dart';
 @JsonSerializable()
 class ProblemPage {
   final int curPage;
-final int offset;//":0,
-  final bool over;//":false,
-  final int pageCount;//":4,
-  final int size;//":21,
-  final int total;//":80
+  final int offset; //":0,
+  final bool over; //":false,
+  final int pageCount; //":4,
+  final int size; //":21,
+  final int total; //":80
   final List<Problem> datas;
-
 
   ProblemPage(this.curPage, this.offset, this.over, this.pageCount, this.size,
       this.total, this.datas);
